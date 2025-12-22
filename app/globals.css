@@ -1,26 +1,440 @@
 @import "tailwindcss";
 
+/* --- 2025 КОСМИЧЕСКИЕ ПЕРЕМЕННЫЕ --- */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-main: #f4f7ff;
+  --bg-accent-1: rgba(100, 150, 255, 0.1);
+  --bg-accent-2: rgba(200, 100, 255, 0.05);
+  --card-bg: rgba(255, 255, 255, 0.6);
+  --card-border: rgba(0, 0, 0, 0.08);
+  --card-glow: rgba(100, 100, 255, 0.1);
+  --text-primary: #121218;
+  --text-secondary: #555566;
+  --neon-accent: #4466ff;
+  --panel-bg: rgba(255, 255, 255, 0.85);
+  
+  /* Динамическая ширина панели */
+  --sidebar-width: 280px;
+  --transition-speed: 0.4s;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+:root.dark-theme {
+  --bg-main: #030306;
+  --bg-accent-1: rgba(0, 242, 255, 0.07);
+  --bg-accent-2: rgba(188, 19, 254, 0.1);
+  --card-bg: rgba(15, 15, 25, 0.7);
+  --card-border: rgba(255, 255, 255, 0.12);
+  --card-glow: rgba(0, 242, 255, 0.15);
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.5);
+  --neon-accent: #00f2ff;
+  --panel-bg: rgba(8, 8, 12, 0.8);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* --- БАЗОВЫЙ СТИЛЬ --- */
+body {
+  margin: 0;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  font-family: 'Inter', system-ui, sans-serif;
+  transition: background var(--transition-speed) ease;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Космическое свечение фона */
+body::before, body::after {
+  content: "";
+  position: fixed;
+  width: 60vw;
+  height: 60vw;
+  border-radius: 50%;
+  filter: blur(120px);
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.5;
+}
+body::before { top: -10%; left: -10%; background: var(--bg-accent-1); }
+body::after { bottom: -10%; right: -10%; background: var(--bg-accent-2); }
+
+/* --- LAYOUT --- */
+.app-container {
+  display: flex;
+  transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Состояние при свернутой панели */
+.app-container.collapsed {
+  --sidebar-width: 80px;
+}
+
+/* --- APP CONTAINER --- */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* --- SIDE PANEL (ФУНКЦИОНАЛЬНАЯ) --- */
+.side-panel {
+  height: 100vh;
+  background: var(--panel-bg);
+  backdrop-filter: blur(30px);
+  border-right: 1px solid var(--card-border);
+  display: flex;
+  flex-direction: column;
+  padding: 30px 0;
+  flex-shrink: 0;
+  overflow: hidden;
+  position: sticky;
+  top: 0;
+  max-width: 50vw;
+  min-width: 60px;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 0 25px;
+  margin-bottom: 30px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.panel-title {
+  font-weight: 700;
+  transition: opacity 0.3s;
+}
+
+/* Скроллируемая навигация */
+.panel-nav {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--card-border) transparent;
+}
+
+.nav-item {
+  background: transparent;
+  border: none;
+  padding: 12px 15px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  border-radius: 14px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  width: 100%;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.nav-item:hover {
+  background: rgba(100, 100, 255, 0.1);
+  color: var(--text-primary);
+  transform: translateX(5px);
+}
+
+.nav-hex {
+  color: var(--neon-accent);
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.panel-footer {
+  margin-top: auto;
+  padding: 20px 15px;
+  border-top: 1px solid var(--card-border);
+  flex-shrink: 0;
+}
+
+/* Скрываем текст при сворачивании */
+.minimized .panel-title,
+.minimized .nav-label,
+.minimized .theme-switch-btn .label,
+.minimized .system-ver {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Стили для свернутой панели */
+.collapsed .side-panel {
+  width: 60px;
+}
+
+/* --- MAIN CONTENT (СЕТКА) --- */
+.main-content {
+  flex: 1;
+  padding: 60px 40px;
+  overflow-y: auto;
+}
+
+.main-grid {
+  display: grid;
+  /* Адаптивная сетка: карточки всегда ровные */
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 30px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+/* --- КРАСИВАЯ КОСМИЧЕСКАЯ КАРТОЧКА --- */
+.space-card {
+  width: 100%;
+  height: 200px;
+  position: relative;
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 30px;
+  cursor: pointer;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.5s cubic-bezier(0.2, 1, 0.2, 1);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.space-card:hover {
+  transform: translateY(-12px) scale(1.02);
+  border-color: var(--neon-accent);
+  box-shadow: 0 25px 60px var(--card-glow);
+}
+
+/* Анимированный блик на карточке */
+.space-card::after {
+  content: "";
+  position: absolute;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  opacity: 0;
+  transition: 0.6s;
+}
+.space-card:hover::after {
+  opacity: 1;
+  transform: translate(15%, 15%);
+}
+
+.card-title {
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  color: var(--text-primary);
+  margin-top: 10px;
+  z-index: 2;
+}
+
+/* --- ADAPTIVE (MOBILE) --- */
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+  }
+  
+  .side-panel {
+    width: 100%;
+    height: auto;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    resize: none;
+  }
+  
+  .main-content {
+    padding: 30px 20px;
+  }
+  
+  .main-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .space-card {
+    height: 200px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* --- THEME TOGGLE & VER --- */
+.theme-switch-btn {
+  width: 100%;
+  padding: 14px;
+  background: rgba(100, 100, 255, 0.05);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.theme-switch-btn:hover {
+  background: var(--neon-accent);
+  color: #000;
+  box-shadow: 0 0 25px var(--neon-accent);
+}
+
+.system-ver {
+  font-size: 10px;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-top: 15px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 1px;
+}
+
+/* Плавный скролл всей страницы */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Тонкий общий скроллбар */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--card-border);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
+
+
+
+/* Кнопка сворачивания внутри панели */
+.collapse-toggle-btn {
+  margin-left: auto;
+  background: rgba(100, 100, 255, 0.1);
+  border: 1px solid var(--card-border);
+  color: var(--neon-accent);
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.3s;
+  font-size: 18px;
+  z-index: 10;
+}
+
+.collapse-toggle-btn:hover {
+  background: var(--neon-accent);
+  color: #000;
+  box-shadow: 0 0 15px var(--neon-accent);
+}
+
+
+.collapsed .collapse-toggle-btn {
+  margin: 0 auto;
+}
+
+
+.collapsed .status-dot {
+  display: none;
+}
+
+/* --- КНОПКА СМЕНЫ ТЕМЫ --- */
+.theme-switch-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  width: 100%;
+  text-align: left;
+}
+
+.theme-switch-btn:hover {
+  background: rgba(100, 100, 255, 0.1);
+  color: var(--text-primary);
+}
+
+.theme-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.download-btn {
+  margin-top: 15px;
+  width: 100%;
+  background: var(--neon-accent);
+  color: white;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(68, 102, 255, 0.3);
+}
+
+.download-btn:hover {
+  background: var(--text-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(68, 102, 255, 0.4);
+}
+
+/* Темная тема для кнопки скачать */
+:root.dark-theme .download-btn {
+  background: #444 !important;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+:root.dark-theme .download-btn:hover {
+  background: #6d6d6d !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 225, 0, 0.1);
+}
+
+
+
+
+/* --- КАСТОМНЫЙ СКРОЛЛБАР --- */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-main);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--neon-accent);
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--neon-accent) var(--bg-main);
 }
