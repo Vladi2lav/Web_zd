@@ -1,0 +1,33 @@
+body {
+    margin: 0;
+    font-family: Arial;
+}
+
+header {
+    display: flex;
+    gap: 20px;
+    padding: 15px;
+    background: #000;
+    color: white;
+}
+
+header a {
+    color: white;
+    text-decoration: none;
+}
+
+.menu-btn {
+    display: none;
+    width: 30px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 20px;
+}
+
+.grid img {
+    width: 100%;
+}

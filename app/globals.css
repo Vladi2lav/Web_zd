@@ -16,6 +16,8 @@
   /* Динамическая ширина панели */
   --sidebar-width: 280px;
   --transition-speed: 0.4s;
+  --scrollbar-thumb-color: rgba(0, 0, 0, 0.2);
+  --scrollbar-thumb-hover-color: rgba(0, 0, 0, 0.4);
 }
 
 :root.dark-theme {
@@ -29,6 +31,8 @@
   --text-secondary: rgba(255, 255, 255, 0.5);
   --neon-accent: #00f2ff;
   --panel-bg: rgba(8, 8, 12, 0.8);
+  --scrollbar-thumb-color: rgba(255, 255, 255, 0.2);
+  --scrollbar-thumb-hover-color: rgba(255, 255, 255, 0.4);
 }
 
 /* --- БАЗОВЫЙ СТИЛЬ --- */
@@ -40,6 +44,7 @@ body {
   transition: background var(--transition-speed) ease;
   overflow-x: hidden;
   min-height: 100vh;
+  user-select: none;
 }
 
 /* Космическое свечение фона */
@@ -70,8 +75,8 @@ body::after { bottom: -10%; right: -10%; background: var(--bg-accent-2); }
 
 /* --- APP CONTAINER --- */
 .app-container {
-  display: flex;
   min-height: 100vh;
+  position: relative;
 }
 
 /* --- SIDE PANEL (ФУНКЦИОНАЛЬНАЯ) --- */
@@ -85,10 +90,13 @@ body::after { bottom: -10%; right: -10%; background: var(--bg-accent-2); }
   padding: 30px 0;
   flex-shrink: 0;
   overflow: hidden;
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  z-index: 10;
   max-width: 50vw;
   min-width: 60px;
+  user-select: none;
 }
 
 .panel-header {
@@ -170,10 +178,22 @@ body::after { bottom: -10%; right: -10%; background: var(--bg-accent-2); }
 }
 
 /* --- MAIN CONTENT (СЕТКА) --- */
+@media (max-width: 768px) {
+  .main-content {
+    padding: 20px;
+    position: static;
+    left: 0;
+    width: 100%;
+    height: auto;
+  }
+}
+
 .main-content {
-  flex: 1;
   padding: 60px 40px;
   overflow-y: auto;
+  position: absolute;
+  top: 0;
+  height: 100vh;
 }
 
 .main-grid {
@@ -201,6 +221,34 @@ body::after { bottom: -10%; right: -10%; background: var(--bg-accent-2); }
   flex-direction: column;
   transition: all 0.5s cubic-bezier(0.2, 1, 0.2, 1);
   box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.space-card.compact {
+  height: auto;
+  padding: 8px;
+  min-height: 50px;
+}
+
+.space-card.compact .card-content {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.space-card.compact .card-main {
+  flex: 1;
+  text-align: center;
+}
+
+.space-card.compact .card-title {
+  font-size: 14px;
+  margin: 0;
+  font-weight: 600;
+}
+
+.space-card.compact .card-badge {
+  font-size: 10px;
 }
 
 .space-card:hover {
@@ -400,6 +448,12 @@ html {
   box-shadow: 0 6px 16px rgba(68, 102, 255, 0.4);
 }
 
+.download-btn.compact {
+  padding: 6px 8px;
+  font-size: 12px;
+  gap: 4px;
+}
+
 /* Темная тема для кнопки скачать */
 :root.dark-theme .download-btn {
   background: #444 !important;
@@ -418,23 +472,60 @@ html {
 
 /* --- КАСТОМНЫЙ СКРОЛЛБАР --- */
 ::-webkit-scrollbar {
-  width: 12px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-main);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--neon-accent);
-  border-radius: 6px;
+  background: var(--scrollbar-thumb-color);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--text-secondary);
+  background: var(--scrollbar-thumb-hover-color);
 }
 
 html {
   scrollbar-width: thin;
-  scrollbar-color: var(--neon-accent) var(--bg-main);
+  scrollbar-color: var(--scrollbar-thumb-color) transparent;
+}
+
+/* --- MOBILE HEADER --- */
+.mobile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background: var(--panel-bg);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--card-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.mobile-toggle-theme-btn,
+.mobile-toggle-compact-btn {
+  background: rgba(100, 100, 255, 0.05);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.mobile-toggle-theme-btn:hover,
+.mobile-toggle-compact-btn:hover {
+  background: var(--neon-accent);
+  color: #000;
+  box-shadow: 0 0 15px var(--neon-accent);
 }

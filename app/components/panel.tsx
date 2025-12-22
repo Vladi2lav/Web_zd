@@ -4,14 +4,14 @@ import React, { useState, useEffect } from 'react';
 
 interface PanelProps {
   items: { id: string; name: string }[];
-  isMobile: boolean;
   width: number;
   setWidth: (width: number) => void;
   isDarkTheme: boolean;
   toggleTheme: () => void;
+  isMobile: boolean;
 }
 
-export default function Panel({ items, isMobile, width, setWidth, isDarkTheme, toggleTheme }: PanelProps) {
+export default function Panel({ items, width, setWidth, isDarkTheme, toggleTheme, isMobile }: PanelProps) {
   const [isResizing, setIsResizing] = useState(false);
   const [startX, setStartX] = useState(0);
   const [startWidth, setStartWidth] = useState(0);
@@ -55,7 +55,7 @@ export default function Panel({ items, isMobile, width, setWidth, isDarkTheme, t
   };
 
   return (
-    <aside className="side-panel" style={!isMobile ? { width: `${width}px`, cursor: isResizing ? 'ew-resize' : 'ew-resize', position: 'relative' } : {}}>
+    <aside className="side-panel" style={{ width: `${width}px`, cursor: isResizing ? 'ew-resize' : 'ew-resize', position: 'relative' }}>
 
       <div className="panel-header">
         <div className="status-dot" />

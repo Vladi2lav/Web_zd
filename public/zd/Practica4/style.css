@@ -1,0 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+body{
+  background-image: url("https://s3.stroi-news.ru/img/aleksandr-sergeevich-pushkin-kartinki-5.jpg");
+  background-size: fill;
+  background-position: top;
+
+}
+h1, h2, p{
+    color: rgb(255, 255, 255);
+    font-family: "Great Vibes", cursive;
+    font-weight: 400;
+    font-style: normal;
+    margin: 10px;
+}
+h1{
+    font-size: 2.5rem;
+}
+h2{
+    font-size: 2em;
+    margin-top: 40px;
+}
+p{
+    font-size: 24px;
+    
+}
+
+#contain{
+    margin-top: 10%;
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 20px;
+    border-radius: 15px;
+    border: 2px solid white;
+}
+
+#gold{
+    color: rgb(236, 183, 37);
+}
+#light-gold{
+    color: #e9e5d0;
+}

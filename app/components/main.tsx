@@ -11,11 +11,13 @@ interface MainProps {
     uniqueId: string; 
     url: string 
   }[];
+  isCompactView: boolean;
+  width: number;
 }
 
-export default function Main({ items }: MainProps) {
+export default function Main({ items, isCompactView, width }: MainProps) {
   return (
-    <main className="main-content">
+    <main className="main-content" style={{ left: `${width}px`, width: `calc(100vw - ${width}px)` }}>
       <div className="main-grid">
         {items.map((item) => {
           
@@ -28,7 +30,7 @@ export default function Main({ items }: MainProps) {
 
           return (
             <section key={item.id} id={item.id} className="scroll-section">
-              <Contain data={data} />
+              <Contain data={data} isCompactView={isCompactView} />
             </section>
           );
         })}

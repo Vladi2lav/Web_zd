@@ -1,0 +1,13 @@
+@media (max-width: 768px) {
+    header a {
+        display: none;
+    }
+
+    .menu-btn {
+        display: block;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}
