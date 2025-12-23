@@ -1,64 +1,95 @@
 body {
+    margin: 0;
     background: #111;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+    color: white;
     font-family: Arial, sans-serif;
 }
 
-form {
-    background: #222;
-    padding: 30px;
-    width: 300px;
-}
-
-.field {
-    position: relative;
-    margin-bottom: 30px;
-}
-
-input {
-    width: 100%;
-    padding: 10px;
-    background: none;
-    border: 2px solid #555;
-    color: white;
-    outline: none;
-}
-
-span {
-    position: absolute;
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #aaa;
-    transition: 0.3s;
-}
-
-.field:has(input:focus) span,
-.field:has(input:valid) span {
-    top: -10px;
-    font-size: 12px;
-}
-
-input:focus {
-    animation: pulse 1s infinite;
-}
-
-@keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.5); }
-    100% { box-shadow: 0 0 0 10px rgba(255,255,255,0); }
-}
-
-button {
-    width: 100%;
-    padding: 10px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-button:hover {
+header {
+    position: sticky;
+    top: 0;
     background: black;
+    padding: 15px;
+}
+
+header a {
     color: white;
+    margin-right: 20px;
+    display: inline-block;
+    transition: transform 0.3s;
+}
+
+header a:hover {
+    transform: translateX(10px);
+}
+
+header a:active {
+    transform: translateX(20px);
+}
+
+.container {
+    display: flex;
+    gap: 30px;
+    padding: 40px;
+    perspective: 1000px;
+}
+
+.card {
+    background: #222;
+    padding: 20px;
+    transition: transform 0.6s;
+}
+
+.card:hover {
+    transform: rotateY(15deg) rotateX(5deg);
+}
+
+.card2 {
+    background: #222;
+    padding: 20px;
+    width: 300px;
+    border: 2px solid cyan;
+    
+}
+
+.card2:hover {
+    animation: warp 1.5s infinite linear;
+    cursor: help;
+}
+
+@keyframes warp {
+    0% {
+        transform: rotateX(0deg) rotateY(0deg) scale(1);
+        filter: hue-rotate(0deg);
+        box-shadow: 0 0 5px cyan;
+    }
+    25% {
+        transform: rotateX(180deg) rotateY(45deg) scale(1.2);
+        box-shadow: 10px 10px 20px magenta;
+    }
+    50% {
+        transform: rotateX(360deg) rotateY(180deg) scale(0.8);
+        filter: hue-rotate(180deg);
+        box-shadow: -10px -10px 30px lime;
+    }
+    75% {
+        transform: rotateX(180deg) rotateY(360deg) scale(1.2);
+        box-shadow: -10px 10px 20px yellow;
+    }
+    100% {
+        transform: rotateX(0deg) rotateY(0deg) scale(1);
+        filter: hue-rotate(360deg);
+        box-shadow: 0 0 5px cyan;
+    }
+}
+
+
+img {
+    width: 100%;
+    transition: transform 0.4s;
+    transform-origin: left center;
+}
+
+img:hover {
+    transform: scale(1.2);
 }
