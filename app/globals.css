@@ -180,6 +180,7 @@ body::after { bottom: -10%; right: -10%; background: var(--bg-accent-2); }
 /* --- MAIN CONTENT (СЕТКА) --- */
 @media (max-width: 768px) {
   .main-content {
+    margin-top: 50px;
     padding: 20px !important;
     position: static;
     left: 0 !important;
