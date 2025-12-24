@@ -2,14 +2,40 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Practice 12</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="media.css">
 </head>
 <body>
 
-<input id="input">
-<button id="add">Добавить</button>
-<ul id="list"></ul>
+<header>
+    <div class="popup">
+        <a href="#">Главная</a>
+        <a href="#">Галерея</a>
+        <a href="#">Контакты</a>
+    </div>
 
+    <div class="mobile_icon">
+        <img id="g" src="menu.png" >
+    </div>
+    
+</header>
+
+<div class="grid">
+    <img src="https://picsum.photos/300/200?1">
+    <img src="https://picsum.photos/300/200?2">
+    <img src="https://picsum.photos/300/200?3">
+</div>
+<button id="show_add_photo">Добавить фото</button>
+<div id="add_new_photo">
+    <div>
+        <input id="new_photo_src" type="text" placeholder="Ссылка на картинку">
+        <input id="new_photo_text" type="text" placeholder="Подпись">
+        <button id="add_photo">Добавить</button>
+        <button id="cancel">Отмена</button>
+    </div>
+</div>
 <script src="script.js"></script>
 </body>
 </html>

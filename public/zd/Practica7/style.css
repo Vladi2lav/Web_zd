@@ -31,7 +31,9 @@ label {
             left: 0;
         }
         input:focus {
-            animation: input_focus .5s infinite alternate;
+            
+         
+            animation: input_focus .5s infinite alternate ;
         }
     }
 }
