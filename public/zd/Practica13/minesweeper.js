@@ -186,5 +186,12 @@ function gameWon(lastIndex) {
         const equalsBtn = freshButtons[targetIndex];
         equalsBtn.textContent = '=';
         equalsBtn.id = 'equals';
+
+        // Final Phase Trigger
+        equalsBtn.addEventListener('click', function () {
+            if (typeof initFinalPhase === 'function') {
+                initFinalPhase();
+            }
+        });
     }
 }

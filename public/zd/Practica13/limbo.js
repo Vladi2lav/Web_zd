@@ -9,12 +9,17 @@ function startLimboEndPhase() {
         const newBtn = btn.cloneNode(true);
         btn.parentNode.replaceChild(newBtn, btn);
 
-        // Clear all classes and styles, set to 'bt'
-        newBtn.className = 'bt';
+        // Clear all classes and styles, set to 'bt' and 'chaos-mode' (flipped)
+        newBtn.className = 'bt chaos-mode';
         newBtn.style = '';
         newBtn.textContent = '?';
         newBtn.id = ''; // Remove specific IDs to normalize behavior
         newBtn.removeAttribute('onclick'); // Remove arithmetic handlers
+
+        // Trigger unflip animation after a slight delay to allow DOM to register flipped state
+        setTimeout(() => {
+            newBtn.classList.remove('chaos-mode');
+        }, 100);
 
         // Add new click listener
         newBtn.addEventListener('click', function (e) {
