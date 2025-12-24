@@ -42,7 +42,8 @@ body {
     height: 600px;
     gap: 5px;
     position: relative;
-    perspective: 1000px; /* Глубина для 3D */
+    perspective: 1000px;
+    /* Глубина для 3D */
 }
 
 button {
@@ -54,7 +55,8 @@ button {
     box-sizing: border-box;
     position: relative;
     z-index: 1;
-    transform-style: preserve-3d; /* Важно для 3D */
+    transform-style: preserve-3d;
+    /* Важно для 3D */
     transition: transform 0.2s ease-out, top 0.2s ease-out, left 0.2s ease-out;
 }
 
@@ -91,7 +93,8 @@ button.limbo {
     background-color: #ffe0e0;
     border-color: red;
     box-shadow: 0 0 15px red;
-    z-index: 1000 !important; /* Поверх всего */
+    z-index: 1000 !important;
+    /* Поверх всего */
 }
 
 #equals {
@@ -102,4 +105,62 @@ button.limbo {
     position: absolute;
     top: 10px;
     right: 10px;
+}
+
+/* New Limbo & Minesweeper Styles */
+.calculator {
+    transition: transform 1s ease-in-out;
+}
+
+.calculator.move-left {
+    transform: translateX(-35vw);
+    /* Move left almost to edge */
+}
+
+.flipped-text {
+    font-size: 14px;
+    /* Smaller text for messages */
+    background-color: #fafafa;
+    color: #333;
+}
+
+/* Minesweeper Button States */
+button.open {
+    background-color: #ddd;
+    box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+button.mine {
+    background-color: #ffcccc;
+    color: red;
+}
+
+button.flag {
+    background-color: #ffd700;
+    /* Gold */
+    color: blue;
+}
+
+button.wrong-flag {
+    background-color: #ffaaaa;
+}
+
+.val-1 {
+    color: blue;
+    font-weight: bold;
+}
+
+.val-2 {
+    color: green;
+    font-weight: bold;
+}
+
+.val-3 {
+    color: red;
+    font-weight: bold;
+}
+
+.val-4 {
+    color: darkblue;
+    font-weight: bold;
 }
