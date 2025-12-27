@@ -18,7 +18,7 @@ if (equalsButton) {
             this.style.transform = 'translateX(150px)';
             escapeStage = 1;
         } else if (escapeStage === 1) {
-            // Движение ВПРАВО и ВВЕРХ
+
             this.style.transform = 'translate(150px, -150px)';
             this.classList.add('limbo');
             escapeStage = 2;
@@ -91,7 +91,7 @@ function startChaos() {
         clearInterval(chaosInterval);
         chaosInterval = null;
 
-        // Limbo phase ends, clear everything and start new logic
+    
         if (typeof startLimboEndPhase === 'function') {
             startLimboEndPhase();
         }

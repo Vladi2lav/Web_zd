@@ -65,24 +65,24 @@ function startMinesweeper(startIndex) {
 
 function handleMinesweeperClick(index, btn) {
     const tile = minesweeperGrid[index];
-    if (tile.isOpen || tile.isFlagged) return; // Ignore open or flagged
+    if (tile.isOpen || tile.isFlagged) return; 
 
     tile.isOpen = true;
     btn.classList.add('open');
 
     if (tile.isMine) {
-        // GAME OVER Logic
+        
         btn.classList.add('mine');
         btn.textContent = '💣';
         revealAllMines();
         alert('Бум! Попробуй еще раз (нужен перезапуск страницы)');
-        // Optional: Reset logic here if desired
+        
     } else {
         if (tile.value > 0) {
             btn.textContent = tile.value;
             btn.classList.add('val-' + tile.value);
         } else {
-            // Auto open neighbors if 0
+            
             openNeighbors(index);
         }
         checkWinCondition(index);
@@ -156,30 +156,30 @@ function gameWon(lastIndex) {
     minesweeperActive = false;
     alert('Победа! Вы нашли все мины.');
 
-    // Restore Displays
+    
     const display = document.getElementById('display');
     const historyDiv = document.getElementById('history');
     if (display) display.textContent = '0';
     if (historyDiv) historyDiv.innerHTML = '';
 
-    // 1. Move calculator back
+
     document.querySelector('.calculator').classList.remove('move-left');
 
     const allButtons = document.querySelectorAll('.buttons button');
 
-    // Clean up grid
+    
     allButtons.forEach(btn => {
         btn.className = 'bt';
         btn.textContent = '';
-        // Remove listeners by cloning again (simplest way to "stop" game interaction)
+        
         const newBtn = btn.cloneNode(true);
         btn.parentNode.replaceChild(newBtn, btn);
     });
 
-    // 3. Make the clicked button equals
+    
     const freshButtons = document.querySelectorAll('.buttons button');
 
-    // Fallback if needed
+    
     let targetIndex = (typeof lastIndex === 'number') ? lastIndex : 10;
 
     if (freshButtons[targetIndex]) {
@@ -187,7 +187,7 @@ function gameWon(lastIndex) {
         equalsBtn.textContent = '=';
         equalsBtn.id = 'equals';
 
-        // Final Phase Trigger
+        
         equalsBtn.addEventListener('click', function () {
             if (typeof initFinalPhase === 'function') {
                 initFinalPhase();
