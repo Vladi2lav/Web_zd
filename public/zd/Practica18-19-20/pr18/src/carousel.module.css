@@ -1,0 +1,14 @@
+.top {
+    bottom: auto;
+    top: 10%;
+}
+
+.bottom {
+    bottom: 10%;
+    top: auto;
+}
+
+.center {
+    bottom: 50%;
+    transform: translateY(50%);
+}

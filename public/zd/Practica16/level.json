@@ -1,0 +1,185 @@
+{
+    "levels": [
+        {
+            "id": 1,
+            "hint": "Level 1: The Basics. Reach the Green Zone.",
+            "settings": {
+                "width": 800,
+                "height": 600,
+                "gravity": 0.5
+            },
+            "player": {
+                "x": 50,
+                "y": 200,
+                "color": "#ef4444"
+            },
+            "goal": {
+                "x": 700,
+                "y": 450,
+                "width": 50,
+                "height": 50,
+                "color": "#22c55e"
+            },
+            "platforms": [
+                {
+                    "x": 0,
+                    "y": 550,
+                    "width": 1000,
+                    "height": 50,
+                    "color": "#1f2937"
+                },
+                {
+                    "x": 200,
+                    "y": 450,
+                    "width": 150,
+                    "height": 20,
+                    "color": "#4b5563"
+                },
+                {
+                    "x": 450,
+                    "y": 350,
+                    "width": 150,
+                    "height": 20,
+                    "color": "#4b5563"
+                }
+            ],
+            "collectibles": [
+                {
+                    "x": 250,
+                    "y": 400,
+                    "width": 20,
+                    "height": 20,
+                    "color": "#fbbf24"
+                },
+                {
+                    "x": 500,
+                    "y": 300,
+                    "width": 20,
+                    "height": 20,
+                    "color": "#fbbf24"
+                }
+            ],
+            "spikes": [],
+            "enemies": []
+        },
+        {
+            "id": 2,
+            "hint": "Level 2: Watch the Spikes.",
+            "settings": {
+                "width": 800,
+                "height": 600,
+                "gravity": 0.5
+            },
+            "player": {
+                "x": 50,
+                "y": 100,
+                "color": "#ef4444"
+            },
+            "goal": {
+                "x": 750,
+                "y": 200,
+                "width": 40,
+                "height": 40,
+                "color": "#22c55e"
+            },
+            "platforms": [
+                {
+                    "x": 0,
+                    "y": 550,
+                    "width": 800,
+                    "height": 50,
+                    "color": "#1f2937"
+                },
+                {
+                    "x": 100,
+                    "y": 400,
+                    "width": 100,
+                    "height": 20,
+                    "color": "#4b5563"
+                },
+                {
+                    "x": 300,
+                    "y": 300,
+                    "width": 100,
+                    "height": 20,
+                    "color": "#4b5563"
+                },
+                {
+                    "x": 550,
+                    "y": 250,
+                    "width": 200,
+                    "height": 20,
+                    "color": "#4b5563"
+                }
+            ],
+            "spikes": [
+                {
+                    "x": 200,
+                    "y": 520,
+                    "width": 400,
+                    "height": 30,
+                    "color": "#dc2626"
+                }
+            ],
+            "collectibles": [
+                {
+                    "x": 350,
+                    "y": 250,
+                    "width": 20,
+                    "height": 20,
+                    "color": "#fbbf24"
+                }
+            ],
+            "enemies": []
+        },
+        {
+            "id": 5,
+            "hint": "Level 5: Resize your browser window to bridge the gap!",
+            "mechanic": "responsive",
+            "settings": {
+                "width": "100%",
+                "height": "100%",
+                "gravity": 0.5
+            },
+            "player": {
+                "x": 50,
+                "y": 300,
+                "color": "#ef4444"
+            },
+            "goal": {
+                "x": "90%",
+                "y": 300,
+                "width": 50,
+                "height": 50,
+                "color": "#22c55e"
+            },
+            "platforms": [
+                {
+                    "x": "0%",
+                    "y": 400,
+                    "width": "20%",
+                    "height": 20,
+                    "color": "#1f2937"
+                },
+                {
+                    "x": "80%",
+                    "y": 400,
+                    "width": "20%",
+                    "height": 20,
+                    "color": "#1f2937"
+                },
+                {
+                    "x": "40%",
+                    "y": 400,
+                    "width": "20%",
+                    "height": 20,
+                    "color": "#3b82f6",
+                    "responsive": true
+                }
+            ],
+            "collectibles": [],
+            "spikes": [],
+            "enemies": []
+        }
+    ]
+}

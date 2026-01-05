@@ -1,0 +1,53 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Great+Vibes&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+:root {
+  --gray1:#333333;
+  --gray2:#4f4f4f;
+  --white1:#ffffff;
+  --white2:#E1DEE5;
+  --blue1:#1D4CFB;
+  --blue2:#2EB6D4;
+  --blue3:#024862;
+  --black:#000000;
+  --black2:#000B2E;
+  --red:#942434;
+}
+
+body, html {
+  font-family: 'Montserrat', sans-serif;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: var(--black2);
+  color: var(--white1);
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'DM Serif Display', serif;
+  margin: 0;
+  padding: 0.5em 0;
+}
+a {
+  color: #007BFF;
+  text-decoration: none;
+  cursor: pointer;
+}
+a:hover {
+  text-decoration: underline;
+}
+.poster {
+  width: 100%;
+  height: 700px;
+  box-sizing: border-box;
+  object-fit: cover;
+  object-position: 0% 25%;
+  overflow: hidden;
+}
+img.poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+
+
+}
