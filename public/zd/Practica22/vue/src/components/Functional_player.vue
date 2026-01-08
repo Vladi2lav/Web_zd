@@ -60,7 +60,7 @@ export default {
     ...mapStores(usePlayerStore),
     audioUrl() {
       if (this.playerStore.currentTrack) {
-        return `http://localhost:3000/api/stream/${this.playerStore.currentTrack.id}`;
+        return `http://localhost:3000/api/stream/${this.playerStore.currentTrack.videoId}`;
       }
       return null;
     },
