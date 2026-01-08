@@ -10,7 +10,6 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.19.2",
-    "youtubei.js": "^16.0.1",
-    "ytdl-core": "^4.11.5"
+    "youtubei.js": "^16.0.1"
   }
 }
