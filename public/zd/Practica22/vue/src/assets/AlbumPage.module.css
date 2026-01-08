@@ -1,0 +1,249 @@
+.albumPage {
+  background-color: #0a0e16;
+  color: #e0e0e0;
+  min-height: 100vh;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.siteHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 8%;
+  background: rgba(10, 14, 22, 0.8);
+  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: 1px;
+}
+
+.navigation a {
+  color: #b3b3b3;
+  text-decoration: none;
+  margin-left: 30px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.navigation a:hover { color: #fff; }
+
+.hero {
+  position: relative;
+  height: 70vh; 
+  min-height: 600px;
+  display: flex;
+  align-items: flex-end;
+  padding: 0 8% 60px 8%;
+  overflow: hidden;
+}
+
+.heroBackground {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background-image: url('@/assets/PosterAlbum.webp');
+  background-size: 100% auto;
+  background-position: center 30%;
+  filter: blur() brightness(0.7);
+  z-index: 1;
+  transform: scale(1.1);
+}
+
+.heroGradientOverlay {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(to bottom, transparent 0%, #0a0e16 90%);
+  z-index: 2;
+}
+
+.heroContentOverlay {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+}
+
+.albumHeaderContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  width: 100%;
+}
+
+.leftContent {
+  display: flex;
+  align-items: flex-end;
+  gap: 30px;
+}
+
+.albumIcon {
+  width: 240px;
+  height: 240px;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.textInfo {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 10px;
+}
+
+.albumName {
+  font-size: clamp(36px, 5vw, 72px);
+  margin: 10px 0;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -1px;
+}
+
+.subTitle {
+  font-size: 14px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #1ed760;
+  letter-spacing: 1px;
+}
+
+.description {
+  color: rgba(255, 255, 255, 0.7);
+  max-width: 500px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.rightContent {
+  padding-bottom: 10px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 10px 20px;
+  border-radius: 50px;
+  backdrop-filter: blur(10px);
+}
+
+.playPill {
+  background: #1ed760;
+  color: #000;
+  border: none;
+  padding: 12px 40px;
+  border-radius: 30px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.playPill:hover {
+  transform: scale(1.05);
+  background: #1fdf64;
+}
+
+.circleBtn, .btnHeart {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  color: #fff;
+  font-size: 16px;
+}
+
+.circleBtn:hover, .btnHeart:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.heartIcon {
+  font-size: 18px;
+}
+
+.tracklistContainer {
+  padding: 20px 8% 60px;
+  background: #0a0e16;
+}
+
+.tracklist {
+  width: 100%;
+  border-collapse: collapse;
+  color: #b3b3b3;
+}
+
+.tracklist th {
+  text-align: left;
+  padding: 12px 15px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  font-size: 12px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.trackRow {
+  transition: background 0.2s;
+  border-radius: 4px;
+}
+
+.trackRow:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.activeRow {
+  background: rgba(30, 215, 96, 0.1);
+}
+
+.tracklist td {
+  padding: 15px;
+  vertical-align: middle;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.colNum { width: 40px; text-align: center; }
+.playingIcon { font-size: 12px; color: #1ed760; }
+
+.trackMeta { display: flex; flex-direction: column; }
+.tName { color: #fff; font-weight: 500; font-size: 15px; }
+.greenText { color: #1ed760; }
+.tArtist { font-size: 13px; color: #888; margin-top: 4px; }
+
+.colFav { text-align: center; }
+.heartIcon { cursor: pointer; transition: transform 0.2s; }
+.heartIcon:hover { transform: scale(1.2); }
+
+@media (max-width: 1024px) {
+  .hero { height: auto; padding-top: 120px; padding-bottom: 40px; }
+  .albumHeaderContent {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 30px;
+  }
+  .leftContent { flex-direction: column; align-items: center; gap: 20px; }
+  .textInfo { align-items: center; padding-bottom: 0; }
+  .rightContent { padding-bottom: 0; }
+  .actions { width: auto; justify-content: center; }
+}
+
+@media (max-width: 768px) {
+  .siteHeader { padding: 15px 5%; }
+  .hero { padding: 100px 5% 30px; }
+  .tracklistContainer { padding: 20px 5% 40px; }
+  .colAlb, .colTime { display: none; }
+  .albumIcon { width: 180px; height: 180px; }
+  .albumName { font-size: 32px; }
+}

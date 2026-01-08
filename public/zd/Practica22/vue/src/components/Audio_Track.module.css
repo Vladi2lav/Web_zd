@@ -1,0 +1,59 @@
+.colNum { 
+  width: 40px; 
+  text-align: center; 
+  padding: 15px;
+  vertical-align: middle;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+.colName {
+  padding: 15px;
+  vertical-align: middle;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+.colAlb {
+  padding: 15px;
+  vertical-align: middle;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+.colTime {
+  padding: 15px;
+  vertical-align: middle;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+.colFav { 
+  text-align: center; 
+  padding: 15px;
+  vertical-align: middle;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.playingIcon { 
+  font-size: 12px; 
+  color: #1ed760; 
+}
+
+.trackMeta { 
+  display: flex; 
+  flex-direction: column; 
+}
+.tName { 
+  color: #fff; 
+  font-weight: 500; 
+  font-size: 15px; 
+}
+.greenText { 
+  color: #1ed760; 
+}
+.tArtist { 
+  font-size: 13px; 
+  color: #888; 
+  margin-top: 4px; 
+}
+
+.heartIcon { 
+  cursor: pointer; 
+  transition: transform 0.2s; 
+}
+.heartIcon:hover { 
+  transform: scale(1.2); 
+}
