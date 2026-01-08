@@ -1,67 +1,75 @@
 <template>
-  <div v-if="track" :class="styles.spotifyPlayer">
-    <audio ref="audio" :src="track.audio" @timeupdate="updateProgress" @loadedmetadata="setDuration" @ended="$emit('playNext')"></audio>
+  <div v-if="playerStore.currentTrack" :class="styles.spotifyPlayer">
+    <audio 
+      ref="audio" 
+      :src="audioUrl" 
+      @timeupdate="updateProgress" 
+      @loadedmetadata="setDuration" 
+      @ended="playerStore.playNext()"
+    ></audio>
 
     <div :class="styles.songInfo">
-      <img :src="track.albumArt || 'https://via.placeholder.com/64'" alt="Album Art" :class="styles.albumArt">
+      <img :src="playerStore.currentTrack.coverUrl || 'https://via.placeholder.com/64'" alt="Album Art" :class="styles.albumArt">
       <div :class="styles.songDetails">
-        <div :class="styles.songTitle">{{ track.title || 'Unknown Title' }}</div>
-        <div :class="styles.songArtist">{{ track.artist || 'Unknown Artist' }}</div>
+        <div :class="styles.songTitle">{{ playerStore.currentTrack.title || 'Unknown Title' }}</div>
+        <div :class="styles.songArtist">{{ playerStore.currentTrack.artist || 'Unknown Artist' }}</div>
       </div>
     </div>
 
     <div :class="styles.playerControls">
-      <button :class="styles.controlButton" @click="$emit('playPrev')">⏮️</button>
-      <button :class="[styles.controlButton, styles.playPause]" @click="togglePlay">{{ isPlaying ? '❚❚' : '▶' }}</button>
-      <button :class="styles.controlButton" @click="$emit('playNext')">⏭️</button>
+      <button :class="styles.controlButton" @click="playerStore.playPrev()">⏮️</button>
+      <button :class="[styles.controlButton, styles.playPause]" @click="togglePlay">{{ playerStore.isPlaying ? '❚❚' : '▶' }}</button>
+      <button :class="styles.controlButton" @click="playerStore.playNext()">⏭️</button>
     </div>
 
     <div :class="styles.progressBarContainer">
       <span>{{ formatTime(currentTime) }}</span>
       <div :class="styles.progressBar" @click="seek">
-        <div :class="styles.progress" :style="{ width: (currentTime / duration * 100) + '%' }"></div>
+        <div :class="styles.progress" :style="{ width: progressPercentage }"></div>
       </div>
       <span>{{ formatTime(duration) }}</span>
     </div>
 
     <div :class="styles.volumeControl">
       <button :class="styles.controlButton" @click="toggleMute">{{ isMuted ? '🔇' : '🔊' }}</button>
-      <div :class="styles.volumeSlider" @click="setVolume">
-        <div :class="styles.volumeLevel" :style="{ width: volume + '%' }"></div>
+      <div class="volume-slider" @click="setVolume">
+        <div class="volume-level" :style="{ width: playerStore.volume + '%' }"></div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { mapStores } from 'pinia';
+import { usePlayerStore } from '../stores/player';
 import styles from './Functional_player.module.css';
 
 export default {
   name: 'FunctionalPlayer',
-  props: {
-    track: {
-      type: Object,
-      default: null,
-    },
-  },
   data() {
     return {
       styles: styles,
-      isPlaying: false,
       currentTime: 0,
       duration: 0,
-      volume: 75,
       isMuted: false,
     };
   },
+  computed: {
+    ...mapStores(usePlayerStore),
+    audioUrl() {
+      if (this.playerStore.currentTrack) {
+        return `http://localhost:3000/api/stream/${this.playerStore.currentTrack.id}`;
+      }
+      return null;
+    },
+    progressPercentage() {
+      if (this.duration === 0) return '0%';
+      return (this.currentTime / this.duration * 100) + '%';
+    }
+  },
   methods: {
     togglePlay() {
-      if (this.isPlaying) {
-        this.$refs.audio.pause();
-      } else {
-        this.$refs.audio.play();
-      }
-      this.isPlaying = !this.isPlaying;
+      this.playerStore.togglePlay();
     },
     updateProgress(event) {
       this.currentTime = event.target.currentTime;
@@ -70,6 +78,7 @@ export default {
       this.duration = event.target.duration;
     },
     formatTime(seconds) {
+      if (isNaN(seconds)) return '0:00';
       const minutes = Math.floor(seconds / 60);
       const secs = Math.floor(seconds % 60);
       return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
@@ -90,7 +99,7 @@ export default {
         if (newVolume < 0) newVolume = 0;
         if (newVolume > 100) newVolume = 100;
 
-        this.volume = newVolume;
+        this.playerStore.setVolume(newVolume);
         this.$refs.audio.volume = newVolume / 100;
         this.isMuted = newVolume === 0;
     },
@@ -100,16 +109,23 @@ export default {
     }
   },
   watch: {
-    track(newTrack) {
-      if (newTrack) {
-        this.$nextTick(() => {
-          this.isPlaying = false;
-          setTimeout(() => {
-              this.togglePlay();
-          }, 100);
-        });
+    'playerStore.isPlaying'(newVal) {
+      if (!this.$refs.audio) return;
+      if (newVal) {
+        this.$refs.audio.play();
+      } else {
+        this.$refs.audio.pause();
       }
     },
+    'playerStore.currentTrack'(newTrack) {
+      if (newTrack) {
+        this.$nextTick(() => {
+          if (this.playerStore.isPlaying) {
+            this.$refs.audio.play();
+          }
+        });
+      }
+    }
   },
 };
 </script>

@@ -13,19 +13,22 @@
     <component 
       :is="currentPage"
       :album="album"
-      :tracks="tracks"
+      :tracks="playerStore.playlist"
       :likedIds="likedIds"
       @play-album="playFirst"
-      @track-selected="setActive"
+      @track-selected="selectTrack"
       @toggle-like="toggleLike"
     >
     </component>
 
-    <FunctionalPlayer :track="activeTrack" @playNext="playNext" @playPrev="playPrev" />
+    <FunctionalPlayer />
   </div>
 </template>
 
 <script>
+import { mapStores } from 'pinia';
+import { usePlayerStore } from './stores/player';
+
 import Home from './pages/Home.vue';
 import Search from './pages/Search.vue';
 import LikedSongs from './pages/LikedSongs.vue';
@@ -33,7 +36,6 @@ import Album from './pages/Album.vue';
 import FunctionalPlayer from './components/Functional_player.vue';
 import styles from './App.module.css';
 
-const rawTracks = import.meta.glob("@/assets/*.mp3", { eager: true });
 
 export default {
   components: {
@@ -44,41 +46,50 @@ export default {
     FunctionalPlayer
   },
   data() {
-    const autor = 'MGE';
-    const preparedTracks = Object.entries(rawTracks).map(([path, module]) => {
-      const filename = path.split('/').pop().replace(/\.mp3$/, '');
-      return { 
-        id: path, 
-        title: filename,
-        artist: autor,
-        audio: module.default,
-        duration: '--:--', 
-        active: false
-      };
-    });
-
     return {
       styles: styles,
-      currentPage: 'Album', // Default page
-      album: {
+      currentPage: 'Home', // Default page
+      album: { // This will also come from the API in the future
         name: 'Engineer Album',
-        artist: autor,
+        artist: 'MGE',
         info: 'This album contains some of the best songs from various artists, blending different genres and styles to create a unique listening experience.',
       },
-      tracks: preparedTracks,
       likedIds: [] 
     };
   },
   computed: {
-    activeTrack() {
-      return this.tracks.find(track => track.active);
-    }
+    ...mapStores(usePlayerStore)
   },
-  mounted() {
+  async created() {
+    // Fetch initial data from our server
+    try {
+      console.log('Fetching initial data from backend...');
+      const response = await fetch('http://localhost:3000/api/home');
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Clean data received from backend:', data);
+      
+      this.playerStore.setPlaylist(data);
+      console.log('Playlist set in Pinia store.');
+    } catch (error) {
+      console.error("Could not fetch data from backend:", error);
+    }
+
     this.loadLikesFromCookie();
   },
-
   methods: {
+    selectTrack(index) {
+      this.playerStore.setTrack(this.playerStore.playlist[index]);
+    },
+    playFirst() {
+      if(this.playerStore.playlist.length > 0) {
+        this.playerStore.setTrack(this.playerStore.playlist[0]);
+      }
+    },
     toggleLike(id) {
       const index = this.likedIds.indexOf(id);
       if (index === -1) {
@@ -105,36 +116,6 @@ export default {
         } catch (e) {
           this.likedIds = [];
         }
-      }
-    },
-
-    setActive(index) {
-      if (index < 0) index = this.tracks.length - 1;
-      if (index >= this.tracks.length) index = 0;
-
-      this.tracks.forEach((t, i) => {
-        t.active = (i === index);
-      });
-    },
-
-    playNext() {
-      const currentIndex = this.tracks.findIndex(t => t.active);
-      if (currentIndex !== -1) {
-        this.setActive(currentIndex + 1);
-      }
-    },
-
-    playPrev() {
-      const currentIndex = this.tracks.findIndex(t => t.active);
-      if (currentIndex !== -1) {
-        this.setActive(currentIndex - 1);
-      }
-    },
-
-    playFirst() {
-      const hasActive = this.tracks.some(t => t.active);
-      if (!hasActive) {
-        this.setActive(0);
       }
     }
   }
