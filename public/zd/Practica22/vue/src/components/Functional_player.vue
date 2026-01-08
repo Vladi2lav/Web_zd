@@ -2,17 +2,19 @@
   <div v-if="playerStore.currentTrack" :class="styles.spotifyPlayer">
     <audio 
       ref="audio" 
+      :key="playerStore.currentTrack?.id"
       :src="audioUrl" 
+      :autoplay="playerStore.isPlaying"
       @timeupdate="updateProgress" 
       @loadedmetadata="setDuration" 
       @ended="playerStore.playNext()"
     ></audio>
 
     <div :class="styles.songInfo">
-      <img :src="playerStore.currentTrack.coverUrl || 'https://via.placeholder.com/64'" alt="Album Art" :class="styles.albumArt">
+      <img :src="playerStore.currentTrack.thumbnail || 'https://via.placeholder.com/64'" alt="Album Art" :class="styles.albumArt">
       <div :class="styles.songDetails">
         <div :class="styles.songTitle">{{ playerStore.currentTrack.title || 'Unknown Title' }}</div>
-        <div :class="styles.songArtist">{{ playerStore.currentTrack.artist || 'Unknown Artist' }}</div>
+        <div :class="styles.songArtist">{{ playerStore.currentTrack.artists?.join(', ') || 'Unknown Artist' }}</div>
       </div>
     </div>
 
@@ -112,18 +114,9 @@ export default {
     'playerStore.isPlaying'(newVal) {
       if (!this.$refs.audio) return;
       if (newVal) {
-        this.$refs.audio.play();
+        this.$refs.audio.play().catch(e => console.error("Play error:", e));
       } else {
         this.$refs.audio.pause();
-      }
-    },
-    'playerStore.currentTrack'(newTrack) {
-      if (newTrack) {
-        this.$nextTick(() => {
-          if (this.playerStore.isPlaying) {
-            this.$refs.audio.play();
-          }
-        });
       }
     }
   },

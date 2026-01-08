@@ -7,7 +7,7 @@
   <td :class="styles.colName">
     <div :class="styles.trackMeta">
       <span :class="[styles.tName, track.active ? styles.greenText : '']">{{ track.title }}</span>
-      <span :class="styles.tArtist">Ado</span>
+      <span :class="styles.tArtist">{{ track.artists?.join(', ') || 'Unknown Artist' }}</span>
     </div>
   </td>
 
