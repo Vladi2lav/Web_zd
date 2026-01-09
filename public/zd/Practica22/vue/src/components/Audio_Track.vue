@@ -6,8 +6,16 @@
 
   <td :class="styles.colName">
     <div :class="styles.trackMeta">
-      <span :class="[styles.tName, track.active ? styles.greenText : '']">{{ track.title }}</span>
-      <span :class="styles.tArtist">{{ track.artists?.join(', ') || 'Unknown Artist' }}</span>
+      <img 
+        v-if="track.thumbnail" 
+        :src="track.thumbnail" 
+        :alt="track.title" 
+        :class="styles.trackThumbnail"
+      />
+      <div :class="styles.trackInfo">
+        <span :class="[styles.tName, track.active ? styles.greenText : '']">{{ track.title }}</span>
+        <span :class="styles.tArtist">{{ track.artists?.join(', ') || 'Unknown Artist' }}</span>
+      </div>
     </div>
   </td>
 

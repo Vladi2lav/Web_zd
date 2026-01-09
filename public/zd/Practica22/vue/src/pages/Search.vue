@@ -1,14 +1,14 @@
 <template>
   <div class="search-page">
     <div class="search-container">
-      <h1>Поиск музыки</h1>
+      
       
       <div class="search-input-wrapper">
         <input 
           type="text" 
           v-model="searchQuery"
           @input="onSearchInput"
-          placeholder="Введите название песни или исполнителя (минимум 3 буквы)..." 
+          placeholder="search" 
           class="search-input"
         />
         <span v-if="isSearching" class="search-spinner">🔍</span>
@@ -31,24 +31,32 @@
       </div>
 
       <div class="results-container">
-        <div 
-          v-for="(track, index) in results" 
-          :key="track.id"
-          class="track-item"
-          @click="playTrack(track)"
-        >
-          <div class="track-thumbnail">
-            <img :src="track.thumbnail" :alt="track.title" />
-            <div class="play-overlay">▶</div>
-          </div>
-          
-          <div class="track-info">
-            <div class="track-title">{{ track.title }}</div>
-            <div class="track-artist">{{ track.artists?.join(', ') || 'Unknown Artist' }}</div>
-          </div>
-          
-          <div class="track-duration">{{ track.duration }}</div>
-        </div>
+        <table class="tracklist" v-if="results.length > 0">
+          <thead>
+            <tr>
+              <th class="col-num">#</th>
+              <th class="col-name">НАЗВАНИЕ</th>
+              <th class="col-alb">АЛЬБОМ</th>
+              <th class="col-time">🕒</th>
+              <th class="col-fav"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr 
+              v-for="(track, index) in results" 
+              :key="track.id"
+              class="track-row"
+              @click="playTrack(track)"
+            >
+              <Audio_Track 
+                :track="track"
+                :index="index"
+                :likedIds="likedIds"
+                @toggleLike="toggleLike"
+              />
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <div v-if="hasMore && !isLoadingMore" class="load-more-container">
@@ -67,9 +75,13 @@
 <script>
 import { mapStores } from 'pinia';
 import { usePlayerStore } from '../stores/player';
+import Audio_Track from '../components/Audio_Track.vue';
 
 export default {
   name: 'SearchPage',
+  components: {
+    Audio_Track
+  },
   data() {
     return {
       searchQuery: '',
@@ -80,20 +92,28 @@ export default {
       totalResults: 0,
       offset: 0,
       limit: 10,
-      searchTimeout: null
+      searchTimeout: null,
+      likedIds: []
     };
+  },
+  mounted() {
+    // Load liked tracks from localStorage
+    const saved = localStorage.getItem('likedTracks');
+    if (saved) {
+      this.likedIds = JSON.parse(saved);
+    }
   },
   computed: {
     ...mapStores(usePlayerStore)
   },
   methods: {
     onSearchInput() {
-      // Clear previous timeout
+      
       if (this.searchTimeout) {
         clearTimeout(this.searchTimeout);
       }
 
-      // Reset results when query changes
+      
       this.results = [];
       this.offset = 0;
       this.hasMore = false;
@@ -186,6 +206,39 @@ export default {
       } else {
         return many;
       }
+    },
+
+    toggleLike(trackId) {
+      const index = this.likedIds.indexOf(trackId);
+      if (index > -1) {
+        // Unlike
+        this.likedIds.splice(index, 1);
+      } else {
+        // Like
+        this.likedIds.push(trackId);
+      }
+      
+      // Save IDs to localStorage
+      localStorage.setItem('likedTracks', JSON.stringify(this.likedIds));
+      
+      // Also save full track data for liked tracks
+      const likedTracksData = this.results.filter(track => this.likedIds.includes(track.id));
+      
+      // Merge with existing liked tracks data (in case user liked from different searches)
+      const existingData = localStorage.getItem('likedTracksData');
+      let allLikedTracks = existingData ? JSON.parse(existingData) : [];
+      
+      // Add new tracks that aren't already in the list
+      likedTracksData.forEach(track => {
+        if (!allLikedTracks.find(t => t.id === track.id)) {
+          allLikedTracks.push(track);
+        }
+      });
+      
+      // Remove unliked tracks
+      allLikedTracks = allLikedTracks.filter(track => this.likedIds.includes(track.id));
+      
+      localStorage.setItem('likedTracksData', JSON.stringify(allLikedTracks));
     }
   }
 };
@@ -229,12 +282,13 @@ h1 {
   border-radius: 12px;
   outline: none;
   transition: all 0.3s ease;
-  background: white;
+  background: rgb(27, 27, 28);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  color: #ffffff;
 }
 
 .search-input:focus {
-  border-color: #667eea;
+  border-color: #e9eaf2;
   box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2);
 }
 
@@ -279,93 +333,67 @@ h1 {
 }
 
 .results-container {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.track-item {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 12px;
-  background: white;
+  background: rgb(27, 27, 28);
   border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-.track-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+.tracklist {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tracklist thead tr {
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.tracklist th {
+  padding: 12px 15px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.col-num {
+  width: 40px;
+  text-align: center !important;
+}
+
+.col-name {
+  width: auto;
+}
+
+.col-alb {
+  width: 200px;
+}
+
+.col-time {
+  width: 80px;
+  text-align: center !important;
+}
+
+.col-fav {
+  width: 60px;
+  text-align: center !important;
+}
+
+.track-row {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.track-row:hover {
   background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
 }
 
-.track-thumbnail {
-  position: relative;
-  width: 60px;
-  height: 60px;
-  flex-shrink: 0;
-  border-radius: 8px;
-  overflow: hidden;
+.track-row:active {
+  transform: scale(0.98);
 }
 
-.track-thumbnail img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.play-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 24px;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.track-item:hover .play-overlay {
-  opacity: 1;
-}
-
-.track-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.track-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #222;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-bottom: 4px;
-}
-
-.track-artist {
-  font-size: 14px;
-  color: #666;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.track-duration {
-  font-size: 14px;
-  color: #999;
-  font-weight: 500;
-  flex-shrink: 0;
-}
 
 .load-more-container {
   display: flex;
@@ -410,22 +438,13 @@ h1 {
     padding: 14px 45px 14px 16px;
   }
 
-  .track-item {
-    gap: 12px;
-    padding: 10px;
+  .col-alb {
+    display: none;
   }
 
-  .track-thumbnail {
-    width: 50px;
-    height: 50px;
-  }
-
-  .track-title {
-    font-size: 15px;
-  }
-
-  .track-artist {
-    font-size: 13px;
+  .tracklist th {
+    padding: 10px 8px;
+    font-size: 11px;
   }
 }
 </style>

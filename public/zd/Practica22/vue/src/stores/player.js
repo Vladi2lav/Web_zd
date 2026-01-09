@@ -9,17 +9,17 @@ export const usePlayerStore = defineStore('player', {
   }),
   actions: {
     setTrack(track) {
+      //is active?
       if (this.playlist.length > 0) {
         this.playlist.forEach(t => t.active = false);
       }
-      // If the track is part of the playlist, mark it active there too
+      
       const foundTrack = this.playlist.find(t => t.id === track.id);
       if (foundTrack) {
         foundTrack.active = true;
       }
+      //
       
-      // Ensure the current track object also represents active state if needed, 
-      // but primarily we rely on the playlist items being updated for the list view.
       track.active = true; 
       
       this.currentTrack = track;
@@ -45,7 +45,6 @@ export const usePlayerStore = defineStore('player', {
     },
     playPrev() {
       if (!this.currentTrack || this.playlist.length === 0) return;
-
       const currentIndex = this.playlist.findIndex(t => t.id === this.currentTrack.id);
       if (currentIndex !== -1) {
         const prevIndex = (currentIndex - 1 + this.playlist.length) % this.playlist.length;

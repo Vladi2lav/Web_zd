@@ -16,7 +16,7 @@ let youtube;
 
 (async () => {
   youtube = await Innertube.create();
-  console.log('YouTube initialized');
+  console.log('init');
 })();
 
 
@@ -73,7 +73,7 @@ app.get('/api/search', async (req, res) => {
   }
 });
 
-// Smart search with pagination and fuzzy matching
+
 app.get('/api/search/smart', async (req, res) => {
   try {
     const query = req.query.q;
@@ -88,23 +88,17 @@ app.get('/api/search/smart', async (req, res) => {
 
     const search = await youtube.music.search(query, { type: 'song' });
 
-    // Debug: log the structure of the search response
     console.log('[Smart Search] Search response keys:', Object.keys(search));
-
-    // YouTube Music API returns results in search.contents (multiple shelves)
     let songs = [];
-
     if (search.contents && Array.isArray(search.contents)) {
       console.log(`[Smart Search] Found ${search.contents.length} shelves`);
 
-      // Iterate through all shelves to find songs
       search.contents.forEach((shelf, shelfIndex) => {
         console.log(`[Smart Search] Shelf ${shelfIndex}: type=${shelf.type}, title=${shelf.title?.text}`);
 
         if (shelf.contents && Array.isArray(shelf.contents)) {
           console.log(`[Smart Search]   - Contains ${shelf.contents.length} items`);
 
-          // Filter only MusicResponsiveListItem (actual songs/tracks)
           const items = shelf.contents.filter(item => {
             const isSong = item.type === 'MusicResponsiveListItem';
             if (shelfIndex === 0 && songs.length < 3) {
@@ -126,14 +120,14 @@ app.get('/api/search/smart', async (req, res) => {
       return res.json({ results: [], hasMore: false, total: 0 });
     }
 
-    // Debug: log the first actual song item
+
     console.log('[Smart Search] First song item keys:', Object.keys(songs[0]));
     console.log('[Smart Search] First song item type:', songs[0].type);
 
-    // Calculate relevance score for each song
+
     const scoredSongs = songs.map((s, index) => {
       try {
-        // Extract title - it's an object with a text property
+
         const titleText = s.title?.text || s.title || '';
         const title = (typeof titleText === 'string' ? titleText : '').toLowerCase();
 
