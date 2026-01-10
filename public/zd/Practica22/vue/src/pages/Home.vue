@@ -10,15 +10,18 @@
 
     <h2 class="tracks-title">Recommended Tracks</h2>
     <SongList 
-      :tracks="tracks" 
-      :likedIds="likedIds"
-      @track-selected="$emit('track-selected', $event)"
-      @toggle-like="$emit('toggle-like', $event)"
+      :tracks="playerStore.playlist" 
+      :likedIds="likesStore.likedIds"
+      @track-selected="playTrack"
+      @toggle-like="toggleLike"
     />
   </div>
 </template>
 
 <script>
+import { mapStores } from 'pinia';
+import { usePlayerStore } from '../stores/player';
+import { useLikesStore } from '../stores/likes';
 import AlbumCard from '../components/AlbumCard.vue';
 import SongList from '../components/SongList.vue';
 
@@ -28,7 +31,6 @@ export default {
     AlbumCard,
     SongList,
   },
-  props: ['tracks', 'likedIds'],
   data() {
     return {
       albums: [
@@ -37,9 +39,34 @@ export default {
       ],
     };
   },
-  mounted() {
-    console.log('Home.vue mounted. Tracks received:', this.tracks);
+  computed: {
+    ...mapStores(usePlayerStore, useLikesStore)
   },
+  async mounted() {
+    try {
+      // Fetch home data
+      const response = await fetch('http://localhost:3000/api/home');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();      
+      this.playerStore.setPlaylist(data);
+    } catch (error) {
+      console.error("Could not fetch data from backend:", error);
+    }
+  },
+  methods: {
+    playTrack(index) {
+      this.playerStore.setTrack(this.playerStore.playlist[index]);
+    },
+    toggleLike(id) {
+      // Find track to save full data
+       const track = this.playerStore.playlist.find(t => t.id === id);
+       if (track) {
+         this.likesStore.toggleLike(track);
+       }
+    }
+  }
 };
 </script>
 

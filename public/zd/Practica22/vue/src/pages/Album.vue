@@ -26,7 +26,7 @@
 
           <div :class="styles.rightContent">
             <div :class="styles.actions">
-              <button :class="styles.playPill" @click="$emit('play-album')">PLAY</button>
+              <button :class="styles.playPill" @click="playAlbum">PLAY</button>
             </div>
           </div>
         </div>
@@ -34,15 +34,18 @@
     </section>
 
     <SongList 
-      :tracks="tracks"
-      :likedIds="likedIds"
-      @track-selected="$emit('track-selected', $event)"
-      @toggle-like="$emit('toggle-like', $event)"
+      :tracks="playerStore.playlist"
+      :likedIds="likesStore.likedIds"
+      @track-selected="playTrack"
+      @toggle-like="toggleLike"
     />
   </main>
 </template>
 
 <script>
+import { mapStores } from 'pinia';
+import { usePlayerStore } from '../stores/player';
+import { useLikesStore } from '../stores/likes';
 import SongList from '../components/SongList.vue';
 import styles from './Album.module.css';
 
@@ -51,10 +54,45 @@ export default {
   components: {
     SongList,
   },
-  props: ['album', 'tracks', 'likedIds'],
   data() {
     return {
-      styles: styles
+      styles: styles,
+      album: {
+        name: 'Engineer Album',
+        artist: 'MGE',
+        info: 'This album contains some of the best songs from various artists, blending different genres and styles to create a unique listening experience.',
+      }
+    }
+  },
+  computed: {
+    ...mapStores(usePlayerStore, useLikesStore)
+  },
+  async mounted() {
+    // If playlist is empty (e.g. reload on this page), fetch default data
+    if (this.playerStore.playlist.length === 0) {
+      try {
+        const response = await fetch('http://localhost:3000/api/home');
+        if (response.ok) {
+          const data = await response.json();      
+          this.playerStore.setPlaylist(data);
+        }
+      } catch (error) {
+        console.error("Could not fetch data:", error);
+      }
+    }
+  },
+  methods: {
+    playAlbum() {
+       if (this.playerStore.playlist.length > 0) {
+         this.playerStore.setTrack(this.playerStore.playlist[0]);
+       }
+    },
+    playTrack(index) {
+       this.playerStore.setTrack(this.playerStore.playlist[index]);
+    },
+    toggleLike(id) {
+       const track = this.playerStore.playlist.find(t => t.id === id);
+       if (track) this.likesStore.toggleLike(track);
     }
   }
 };

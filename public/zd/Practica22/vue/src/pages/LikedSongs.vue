@@ -15,7 +15,7 @@
               <span :class="styles.subTitle">Плейлист</span>
               <h1 :class="styles.albumName">My Favorites</h1>
               <p :class="styles.description">
-                {{ likedTracks.length }} {{ pluralize(likedTracks.length, 'трек', 'трека', 'треков') }}
+                {{ displayedTracks.length }} {{ pluralize(displayedTracks.length, 'трек', 'трека', 'треков') }}
               </p>
             </div>
           </div>
@@ -23,7 +23,7 @@
           <div :class="styles.rightContent">
             <div :class="styles.actions">
               <button 
-                v-if="likedTracks.length > 0" 
+                v-if="displayedTracks.length > 0" 
                 :class="styles.playPill" 
                 @click="playAll"
               >
@@ -36,9 +36,9 @@
     </section>
 
     <SongList 
-      v-if="likedTracks.length > 0"
-      :tracks="likedTracks"
-      :likedIds="localLikedIds"
+      v-if="displayedTracks.length > 0"
+      :tracks="displayedTracks"
+      :likedIds="likesStore.likedIds"
       @track-selected="playTrack"
       @toggle-like="toggleLike"
     />
@@ -54,6 +54,7 @@
 <script>
 import { mapStores } from 'pinia';
 import { usePlayerStore } from '../stores/player';
+import { useLikesStore } from '../stores/likes';
 import SongList from '../components/SongList.vue';
 import styles from './LikedSongs.module.css';
 
@@ -62,52 +63,42 @@ export default {
   components: {
     SongList,
   },
-  props: {
-    album: Object,
-    tracks: Array,
-    likedIds: Array
-  },
   data() {
     return {
       styles: styles
     };
   },
   computed: {
-    ...mapStores(usePlayerStore),
+    ...mapStores(usePlayerStore, useLikesStore),
     
-    // Get liked track IDs from props (which come from App.vue cookies)
-    localLikedIds() {
-      return this.likedIds || [];
-    },
-    
-    // Filter tracks from player store playlist that are liked
-    likedTracks() {
-      if (!this.playerStore.playlist || this.playerStore.playlist.length === 0) {
-        return [];
-      }
-      
-      return this.playerStore.playlist.filter(track => 
-        this.localLikedIds.includes(track.id)
-      );
+    displayedTracks() {
+      return this.likesStore.getLikedTracks;
     }
   },
   methods: {
     playTrack(index) {
-      const track = this.likedTracks[index];
+      // Update playlist context to liked songs
+      this.playerStore.setPlaylist(this.displayedTracks);
+      // Play the selected track
+      const track = this.displayedTracks[index];
       if (track) {
         this.playerStore.setTrack(track);
       }
     },
 
     playAll() {
-      if (this.likedTracks.length > 0) {
-        this.playerStore.setTrack(this.likedTracks[0]);
+      if (this.displayedTracks.length > 0) {
+        this.playTrack(0);
       }
     },
 
     toggleLike(trackId) {
-      // Emit to parent (App.vue) to handle cookie update
-      this.$emit('toggle-like', trackId);
+      // We need the track object to toggle like properly if it's adding (but here we are removing usually)
+      // If we are in LikedSongs, we definitely have the track data in store
+      const track = this.displayedTracks.find(t => t.id === trackId);
+      if (track) {
+        this.likesStore.toggleLike(track);
+      }
     },
 
     pluralize(count, one, few, many) {

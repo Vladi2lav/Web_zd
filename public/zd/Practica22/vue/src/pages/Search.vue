@@ -51,7 +51,7 @@
               <Audio_Track 
                 :track="track"
                 :index="index"
-                :likedIds="likedIds"
+                :likedIds="localLikedIds"
                 @toggleLike="toggleLike"
               />
             </tr>
@@ -74,6 +74,7 @@
 
 <script>
 import { mapStores } from 'pinia';
+import { useLikesStore } from '../stores/likes';
 import { usePlayerStore } from '../stores/player';
 import Audio_Track from '../components/Audio_Track.vue';
 
@@ -92,19 +93,14 @@ export default {
       totalResults: 0,
       offset: 0,
       limit: 10,
-      searchTimeout: null,
-      likedIds: []
+      searchTimeout: null
     };
   },
-  mounted() {
-    // Load liked tracks from localStorage
-    const saved = localStorage.getItem('likedTracks');
-    if (saved) {
-      this.likedIds = JSON.parse(saved);
-    }
-  },
   computed: {
-    ...mapStores(usePlayerStore)
+    ...mapStores(usePlayerStore, useLikesStore),
+    localLikedIds() {
+      return this.likesStore.likedIds;
+    }
   },
   methods: {
     onSearchInput() {
@@ -192,6 +188,8 @@ export default {
 
     playTrack(track) {
       console.log('Playing track:', track);
+      // Update playlist to search results context
+      this.playerStore.setPlaylist(this.results);
       this.playerStore.setTrack(track);
     },
 
@@ -209,36 +207,12 @@ export default {
     },
 
     toggleLike(trackId) {
-      const index = this.likedIds.indexOf(trackId);
-      if (index > -1) {
-        // Unlike
-        this.likedIds.splice(index, 1);
-      } else {
-        // Like
-        this.likedIds.push(trackId);
+      // Find the track in search results
+      const track = this.results.find(t => t.id === trackId);
+      
+      if (track) {
+        this.likesStore.toggleLike(track);
       }
-      
-      // Save IDs to localStorage
-      localStorage.setItem('likedTracks', JSON.stringify(this.likedIds));
-      
-      // Also save full track data for liked tracks
-      const likedTracksData = this.results.filter(track => this.likedIds.includes(track.id));
-      
-      // Merge with existing liked tracks data (in case user liked from different searches)
-      const existingData = localStorage.getItem('likedTracksData');
-      let allLikedTracks = existingData ? JSON.parse(existingData) : [];
-      
-      // Add new tracks that aren't already in the list
-      likedTracksData.forEach(track => {
-        if (!allLikedTracks.find(t => t.id === track.id)) {
-          allLikedTracks.push(track);
-        }
-      });
-      
-      // Remove unliked tracks
-      allLikedTracks = allLikedTracks.filter(track => this.likedIds.includes(track.id));
-      
-      localStorage.setItem('likedTracksData', JSON.stringify(allLikedTracks));
     }
   }
 };
