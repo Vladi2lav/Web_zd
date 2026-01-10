@@ -14,7 +14,20 @@
       <img :src="playerStore.currentTrack.thumbnail || 'https://via.placeholder.com/64'" alt="Album Art" :class="styles.albumArt">
       <div :class="styles.songDetails">
         <div :class="styles.songTitle">{{ playerStore.currentTrack.title || 'Unknown Title' }}</div>
-        <div :class="styles.songArtist">{{ playerStore.currentTrack.artists?.join(', ') || 'Unknown Artist' }}</div>
+        <div :class="styles.songArtist">
+           <template v-if="Array.isArray(playerStore.currentTrack.artists)">
+              <RouterLink 
+                v-for="(artist, idx) in playerStore.currentTrack.artists" 
+                :key="idx" 
+                :to="artist.id ? '/artist/' + artist.id : ''"
+                :class="styles.artistLink"
+                @click.stop
+              >
+                {{ artist.name }}{{ idx < playerStore.currentTrack.artists.length - 1 ? ', ' : '' }}
+              </RouterLink>
+           </template>
+           <span v-else>{{ playerStore.currentTrack.artists || 'Unknown Artist' }}</span>
+        </div>
       </div>
     </div>
 

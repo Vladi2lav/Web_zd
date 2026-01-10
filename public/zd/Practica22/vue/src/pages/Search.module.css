@@ -1,0 +1,149 @@
+.searchPage {
+    padding: 24px;
+}
+
+.searchBarContainer {
+    margin-bottom: 32px;
+}
+
+.searchInput {
+    width: 300px;
+    max-width: 100%;
+    padding: 12px 20px;
+    border-radius: 50px;
+    border: none;
+    background-color: white;
+    color: black;
+    font-size: 1rem;
+}
+
+.searchInput:focus {
+    outline: 2px solid white;
+}
+
+.resultsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.sectionTitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: white;
+}
+
+/* Artists */
+.artistList {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.artistCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #181818;
+    padding: 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+    width: 160px;
+}
+
+.artistCard:hover {
+    background-color: #282828;
+}
+
+.artistImage {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+.artistName {
+    font-weight: 700;
+    color: white;
+    text-align: center;
+    margin-bottom: 4px;
+}
+
+.artistTag {
+    color: #b3b3b3;
+    font-size: 0.8rem;
+}
+
+/* Albums Grid */
+.albumGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+/* Track List */
+.trackTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.trackRow {
+    height: 56px;
+}
+
+.trackRow:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.noResults {
+    text-align: center;
+    margin-top: 40px;
+    color: #b3b3b3;
+}
+
+.linkWrapper {
+    color: inherit;
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .searchPage {
+        padding: 16px;
+    }
+
+    .searchInput {
+        width: 100%;
+    }
+
+    .artistList {
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .artistCard {
+        width: calc(50% - 6px);
+        /* 2 per row minus gap half */
+        box-sizing: border-box;
+        padding: 12px;
+    }
+
+    .artistImage {
+        width: 80px;
+        height: 80px;
+    }
+
+    .artistName {
+        font-size: 0.9rem;
+    }
+
+    .albumGrid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+}

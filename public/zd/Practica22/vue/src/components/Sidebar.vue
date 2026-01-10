@@ -16,7 +16,7 @@
         <span v-if="!isCollapsed" :class="styles.label">Поиск</span>
       </RouterLink>
 
-      <RouterLink to="/liked-songs" :class="styles.navItem" active-class="active">
+      <RouterLink to="/liked" :class="styles.navItem" active-class="active">
         <span :class="styles.icon">📚</span>
         <span v-if="!isCollapsed" :class="styles.label">Моя библиотека</span>
       </RouterLink>
@@ -28,7 +28,7 @@
         <span v-if="!isCollapsed">Создать плейлист</span>
       </button>
 
-      <RouterLink to="/liked-songs" :class="styles.likedSongsLink">
+      <RouterLink to="/liked" :class="styles.likedSongsLink">
         <span :class="styles.heart">❤️</span> 
         <span v-if="!isCollapsed">Избранное</span>
       </RouterLink>
@@ -58,7 +58,7 @@
         <span :class="styles.mobileLabel">Поиск</span>
       </RouterLink>
 
-      <RouterLink to="/liked-songs" :class="styles.mobileItem" active-class="active">
+      <RouterLink to="/liked" :class="styles.mobileItem" active-class="active">
         <span :class="styles.icon">📚</span>
         <span :class="styles.mobileLabel">Медиатека</span>
       </RouterLink>

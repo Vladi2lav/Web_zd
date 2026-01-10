@@ -27,6 +27,9 @@
           <div :class="styles.rightContent">
             <div :class="styles.actions">
               <button :class="styles.playPill" @click="playAlbum">PLAY</button>
+              <button :class="styles.actionBtn" @click="toggleAlbumLike">
+                 {{ isLiked ? '❤️' : '🤍' }}
+              </button>
             </div>
           </div>
         </div>
@@ -131,7 +134,26 @@ export default {
     toggleLike(id) {
        const track = this.playerStore.playlist.find(t => t.id === id);
        if (track) this.likesStore.toggleLike(track);
+    },
+    toggleAlbumLike() {
+        const id = this.$route.params.id;
+        if (!id) return;
+        
+        const albumToSave = {
+            id: id,
+            idStr: id, // Consistent with API
+            title: this.album.name,
+            artist: this.album.artist,
+            cover: this.album.cover
+        };
+        this.likesStore.toggleAlbumLike(albumToSave);
     }
+  },
+  computed: {
+     ...mapStores(usePlayerStore, useLikesStore),
+     isLiked() {
+         return this.likesStore.isAlbumLiked(this.$route.params.id);
+     }
   }
 };
 </script>

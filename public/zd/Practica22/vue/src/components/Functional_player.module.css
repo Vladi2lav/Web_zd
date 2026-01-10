@@ -1,7 +1,4 @@
 .spotifyPlayer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
   width: 100%;
   background-color: #181818;
   color: #fff;
@@ -11,6 +8,8 @@
   padding: 12px 20px;
   box-sizing: border-box;
   z-index: 1000;
+  /* Removed fixed positioning to respect grid layout */
+  border-top: 1px solid #282828;
 }
 
 .songInfo {
@@ -23,6 +22,7 @@
   width: 56px;
   height: 56px;
   margin-right: 12px;
+  border-radius: 4px;
 }
 
 .songDetails {
@@ -32,12 +32,27 @@
 
 .songTitle {
   font-size: 14px;
-  font-weight: 400;
+  font-weight: 500;
 }
 
 .songArtist {
-  font-size: 12px;
+  font-size: 0.85rem;
   color: #b3b3b3;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 150px;
+}
+
+.artistLink {
+  color: #b3b3b3;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.artistLink:hover {
+  color: white;
+  text-decoration: underline;
 }
 
 .playerControls {
@@ -45,16 +60,17 @@
   align-items: center;
   justify-content: center;
   flex-grow: 1;
+  gap: 16px;
 }
 
 .controlButton {
   background: none;
   border: none;
   color: #b3b3b3;
-  font-size: 24px;
-  margin: 0 8px;
+  font-size: 20px;
   cursor: pointer;
   padding: 8px;
+  transition: color 0.2s;
 }
 
 .controlButton:hover {
@@ -65,12 +81,12 @@
   background-color: #fff;
   color: #000;
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .playPause:hover {
@@ -83,12 +99,14 @@
   justify-content: center;
   width: 40%;
   flex-grow: 2;
+  margin: 0 20px;
 }
 
 .progressBarContainer span {
-  font-size: 12px;
-  min-width: 40px;
+  font-size: 11px;
+  min-width: 35px;
   text-align: center;
+  color: #b3b3b3;
 }
 
 .progressBar {
@@ -96,8 +114,9 @@
   border-radius: 2px;
   height: 4px;
   width: 100%;
-  margin: 0 10px;
+  margin: 0 8px;
   cursor: pointer;
+  position: relative;
 }
 
 .progress {
@@ -109,7 +128,7 @@
 .volumeControl {
   display: flex;
   align-items: center;
-  min-width: 180px;
+  min-width: 120px;
   justify-content: flex-end;
 }
 
@@ -117,13 +136,62 @@
   background-color: #404040;
   border-radius: 2px;
   height: 4px;
-  width: 100px;
+  width: 80px;
   margin-left: 8px;
   cursor: pointer;
 }
 
 .volumeLevel {
-  background-color: #1db954;
+  background-color: #b3b3b3;
   border-radius: 2px;
   height: 100%;
+}
+
+.volumeContainer:hover .volumeLevel {
+  background-color: #1db954;
+}
+
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .spotifyPlayer {
+    padding: 8px 12px;
+  }
+
+  .volumeControl {
+    display: none;
+    /* Hide volume on mobile */
+  }
+
+  .progressBarContainer {
+    display: none;
+    /* Simplify UI: hide progress bar on small mobile or move to top */
+  }
+
+  /* Alternatively, keep progress but make it very thin at absolute top */
+
+  .songInfo {
+    min-width: auto;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .songDetails {
+    max-width: 100%;
+  }
+
+  .songTitle {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .playerControls {
+    flex-grow: 0;
+  }
+
+  .albumArt {
+    width: 40px;
+    height: 40px;
+  }
 }

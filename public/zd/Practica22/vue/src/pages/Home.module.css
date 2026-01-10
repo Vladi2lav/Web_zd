@@ -1,0 +1,228 @@
+.homePage {
+    padding: 24px;
+    background: linear-gradient(180deg, #222 0%, #121212 300px);
+    min-height: 100%;
+}
+
+/* Responsive - stacked on mobile? */
+@media (max-width: 768px) {
+    .homePage {
+        padding: 16px;
+    }
+
+    .gridContainer {
+        grid-template-columns: repeat(2, 1fr);
+        /* Force 2 columns */
+        gap: 12px;
+    }
+
+    .heroCard {
+        height: 60px;
+        /* Smaller height */
+        padding: 12px;
+        gap: 8px;
+    }
+
+    .heroIconBox {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+    }
+
+    .heroImage {
+        width: 36px;
+        height: 36px;
+    }
+
+    .heroText {
+        font-size: 0.85rem;
+    }
+}
+
+/* Main Grid Layout */
+.gridContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 24px;
+    margin-bottom: 48px;
+}
+
+/* Unified Card Style */
+.heroCard {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    height: 80px;
+    /* Fixed height for uniformity */
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+}
+
+.heroCard:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* Functional Card Variations */
+.heroCard.search {
+    border-left: 4px solid #fff;
+}
+
+.heroCard.liked {
+    border-left: 4px solid #450af5;
+}
+
+.heroCard.create {
+    border-left: 4px solid #1db954;
+}
+
+.heroIconBox {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.heroImage {
+    width: 48px;
+    height: 48px;
+    border-radius: 4px;
+    object-fit: cover;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    flex-shrink: 0;
+}
+
+.heroText {
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.gradientPurple {
+    background: linear-gradient(135deg, #450af5, #8e8ee5);
+    box-shadow: 0 4px 12px rgba(69, 10, 245, 0.3);
+}
+
+.gradientGrey {
+    background: #333;
+}
+
+/* Artist Cards (Circular) */
+.artistCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 150px;
+    cursor: pointer;
+}
+
+.artistImage {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    margin-bottom: 12px;
+    transition: transform 0.2s;
+}
+
+.artistCard:hover .artistImage {
+    transform: scale(1.05);
+}
+
+.artistName {
+    font-weight: 600;
+    color: white;
+    text-align: center;
+}
+
+
+/* Track Cards (Square-ish for history/popular) */
+.trackCard {
+    min-width: 140px;
+    max-width: 140px;
+    background-color: #181818;
+    padding: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.trackCard:hover {
+    background-color: #282828;
+}
+
+.trackThumb {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.trackTitle {
+    color: white;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 4px;
+}
+
+.trackArtist {
+    color: #b3b3b3;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sectionTitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 16px;
+}
+
+.trackListContainer {
+    width: 100%;
+}
+
+.trackTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.trackRow {
+    height: 56px;
+    border-radius: 4px;
+    /* Does not work on TR without tweaks, but nice to have */
+}
+
+.trackRow:hover {
+    background-color: #2a2a2a;
+}
+
+.linkWrapper {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    height: 100%;
+}

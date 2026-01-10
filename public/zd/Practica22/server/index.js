@@ -13,7 +13,6 @@ app.use(cors());
 
 let youtube;
 
-
 (async () => {
   youtube = await Innertube.create();
   console.log('init');
@@ -37,10 +36,10 @@ app.get('/api/home', async (req, res) => {
       .map(item => ({
         id: item.id,
         videoId: item.video_id || item.id,
-        title: item.title,
-        artists: item.artists?.map(a => a.name),
+        title: item.title?.text || item.title,
+        artists: parseArtists(item), // Use helper
         duration: item.duration?.text,
-        thumbnail: item.thumbnail?.contents?.[0]?.url
+        thumbnail: item.thumbnail?.contents?.[0]?.url || item.thumbnails?.[0]?.url
       }));
 
     res.json(songs);
@@ -50,6 +49,17 @@ app.get('/api/home', async (req, res) => {
   }
 });
 
+function parseArtists(item) {
+  // youtubei.js usually provides structured artists
+  if (Array.isArray(item.artists)) {
+    return item.artists.map(a => ({
+      name: a.name,
+      id: a.channel_id || a.id
+    }));
+  }
+  // Fallback if not parsed well (rare)
+  return [];
+}
 
 app.get('/api/search', async (req, res) => {
   try {
@@ -70,176 +80,6 @@ app.get('/api/search', async (req, res) => {
   } catch (e) {
     console.error(e);
     res.status(500).json([]);
-  }
-});
-
-
-app.get('/api/search/smart', async (req, res) => {
-  try {
-    const query = req.query.q;
-    const offset = parseInt(req.query.offset) || 0;
-    const limit = parseInt(req.query.limit) || 10;
-
-    if (!query || query.length < 3) {
-      return res.json({ results: [], hasMore: false, total: 0 });
-    }
-
-    console.log(`[Smart Search] Query: "${query}", Offset: ${offset}, Limit: ${limit}`);
-
-    const search = await youtube.music.search(query, { type: 'song' });
-
-    console.log('[Smart Search] Search response keys:', Object.keys(search));
-    let songs = [];
-    if (search.contents && Array.isArray(search.contents)) {
-      console.log(`[Smart Search] Found ${search.contents.length} shelves`);
-
-      search.contents.forEach((shelf, shelfIndex) => {
-        console.log(`[Smart Search] Shelf ${shelfIndex}: type=${shelf.type}, title=${shelf.title?.text}`);
-
-        if (shelf.contents && Array.isArray(shelf.contents)) {
-          console.log(`[Smart Search]   - Contains ${shelf.contents.length} items`);
-
-          const items = shelf.contents.filter(item => {
-            const isSong = item.type === 'MusicResponsiveListItem';
-            if (shelfIndex === 0 && songs.length < 3) {
-              console.log(`[Smart Search]     - Item type: ${item.type}, isSong: ${isSong}`);
-            }
-            return isSong;
-          });
-
-          songs = songs.concat(items);
-          console.log(`[Smart Search]   - Added ${items.length} songs from this shelf`);
-        }
-      });
-    }
-
-    console.log(`[Smart Search] Total songs found: ${songs.length}`);
-
-    if (songs.length === 0) {
-      console.log('[Smart Search] No songs found');
-      return res.json({ results: [], hasMore: false, total: 0 });
-    }
-
-
-    console.log('[Smart Search] First song item keys:', Object.keys(songs[0]));
-    console.log('[Smart Search] First song item type:', songs[0].type);
-
-
-    const scoredSongs = songs.map((s, index) => {
-      try {
-
-        const titleText = s.title?.text || s.title || '';
-        const title = (typeof titleText === 'string' ? titleText : '').toLowerCase();
-
-        // Extract artists - they're in an array
-        const artistsText = s.artists?.map(a => a.name).join(' ') || '';
-        const artists = artistsText.toLowerCase();
-
-        const queryLower = query.toLowerCase();
-
-        let score = 0;
-
-        // Exact match gets highest score
-        if (title === queryLower) score += 100;
-        if (artists === queryLower) score += 100;
-
-        // Starts with query
-        if (title.startsWith(queryLower)) score += 50;
-        if (artists.startsWith(queryLower)) score += 50;
-
-        // Contains query as substring
-        if (title.includes(queryLower)) score += 30;
-        if (artists.includes(queryLower)) score += 30;
-
-        // Split query into words and check each word
-        const queryWords = queryLower.split(/\s+/).filter(w => w.length >= 2);
-        const titleWords = title.split(/\s+/);
-        const artistWords = artists.split(/\s+/);
-
-        queryWords.forEach(queryWord => {
-          // Exact word match
-          if (titleWords.includes(queryWord)) score += 25;
-          if (artistWords.includes(queryWord)) score += 25;
-
-          // Word starts with query word
-          titleWords.forEach(titleWord => {
-            if (titleWord.startsWith(queryWord)) score += 15;
-            // Partial match within word (at least 3 chars)
-            if (queryWord.length >= 3 && titleWord.includes(queryWord)) score += 10;
-          });
-
-          artistWords.forEach(artistWord => {
-            if (artistWord.startsWith(queryWord)) score += 15;
-            // Partial match within word (at least 3 chars)
-            if (queryWord.length >= 3 && artistWord.includes(queryWord)) score += 10;
-          });
-        });
-
-        // If no query words, check if any part of query matches any word
-        if (queryWords.length === 0 && queryLower.length >= 3) {
-          titleWords.forEach(word => {
-            if (word.includes(queryLower)) score += 10;
-          });
-          artistWords.forEach(word => {
-            if (word.includes(queryLower)) score += 10;
-          });
-        }
-
-        if (index === 0) {
-          console.log('[Smart Search] First song scoring:');
-          console.log('  - Title:', titleText);
-          console.log('  - Artists:', artistsText);
-          console.log('  - Query:', query);
-          console.log('  - Query words:', queryWords);
-          console.log('  - Score:', score);
-        }
-
-        return {
-          song: s,
-          score
-        };
-      } catch (err) {
-        console.error('[Smart Search] Error scoring song:', err);
-        console.error('[Smart Search] Problematic song:', JSON.stringify(s, null, 2).substring(0, 300));
-        return { song: s, score: 0 };
-      }
-    });
-
-    // Sort by relevance score (highest first)
-    scoredSongs.sort((a, b) => b.score - a.score);
-
-    // Filter out songs with score 0 (no match)
-    const relevantSongs = scoredSongs.filter(s => s.score > 0);
-
-    console.log(`[Smart Search] Relevant songs after filtering: ${relevantSongs.length}`);
-
-    // Paginate
-    const paginatedSongs = relevantSongs.slice(offset, offset + limit);
-    const hasMore = offset + limit < relevantSongs.length;
-
-    const results = paginatedSongs.map(({ song }) => ({
-      id: song.id,
-      videoId: song.id,
-      title: song.title?.text || song.title || 'Unknown',
-      artists: song.artists?.map(a => a.name) || [],
-      duration: song.duration?.text || '',
-      thumbnail: song.thumbnail?.contents?.[0]?.url || song.thumbnails?.[0]?.url || ''
-    }));
-
-    console.log(`[Smart Search] Returning ${results.length} results, hasMore: ${hasMore}`);
-
-    res.json({
-      results,
-      hasMore,
-      total: relevantSongs.length,
-      offset,
-      limit
-    });
-
-  } catch (e) {
-    console.error('[Smart Search] Error:', e);
-    console.error('[Smart Search] Stack:', e.stack);
-    res.status(500).json({ results: [], hasMore: false, total: 0 });
   }
 });
 
@@ -266,6 +106,217 @@ app.get('/api/album/:id', async (req, res) => {
   } catch (e) {
     console.error("Error fetching album:", e);
     res.status(500).json({ error: "Failed to fetch album" });
+  }
+});
+
+
+app.get('/api/artist/:id', async (req, res) => {
+  try {
+    const artist = await youtube.music.getArtist(req.params.id);
+
+    // Extract basic info
+    // Extract basic info
+    let name = artist.header?.title?.text || artist.name || 'Unknown Artist';
+    let description = artist.header?.description?.text || '';
+    let image = artist.header?.thumbnails?.[0]?.url;
+
+    // Fallback: If image is missing, try to find it via search (like Search page)
+    if (!image && name !== 'Unknown Artist') {
+      try {
+        const search = await youtube.music.search(name, { type: 'artist' });
+        const match = search.artists?.find(a => a.name === name) || search.artists?.[0];
+        if (match) {
+          image = match.thumbnail?.contents?.[0]?.url;
+        }
+      } catch (err) {
+        console.error("Fallback artist image search failed:", err);
+      }
+    }
+
+    const info = {
+      name,
+      description,
+      image,
+    };
+
+    // Extract Top Songs
+    const topSongsShelf = artist.sections?.find(s => s.title?.text === 'Top songs' || s.title?.text === 'Popular');
+    const topTracks = topSongsShelf?.contents?.map(item => ({
+      id: item.id,
+      videoId: item.id,
+      title: item.title,
+      artists: [{ name: info.name, id: req.params.id }],
+      duration: item.duration?.text,
+      thumbnail: item.thumbnail?.contents?.[0]?.url
+    })) || [];
+
+
+    // Extract Albums
+    let albums = [];
+    const albumShelves = artist.sections?.filter(s =>
+      s.title?.text?.includes('Albums') ||
+      s.title?.text?.includes('Singles') ||
+      s.title?.text?.includes('EPs')
+    );
+
+    if (albumShelves) {
+      albumShelves.forEach(shelf => {
+        const items = shelf.contents?.map(item => ({
+          id: item.id,
+          idStr: item.browse_endpoint?.browse_id,
+          title: item.title,
+          artist: info.name,
+          cover: item.thumbnail?.contents?.[0]?.url,
+          year: item.subtitle
+        }));
+        if (items) albums = albums.concat(items);
+      });
+    }
+
+    res.json({
+      info,
+      topTracks: topTracks.slice(0, 10),
+      albums
+    });
+  } catch (e) {
+    console.error("Error fetching artist:", e);
+    res.status(500).json({ error: "Failed to fetch artist" });
+  }
+});
+
+
+app.get('/api/search/smart', async (req, res) => {
+  try {
+    const query = req.query.q;
+    if (!query || query.length < 2) return res.json({ artists: [], albums: [], tracks: [] });
+
+    console.log(`[Smart Search] Query: "${query}"`);
+    const search = await youtube.music.search(query);
+
+    let artists = [];
+    let albums = [];
+    let tracks = [];
+
+    const processItem = (item, shelfType) => {
+      if (!item) return;
+
+      // Helper to get text from various layouts
+      const getFlexText = (index) => {
+        if (item.flex_columns && item.flex_columns[index]) {
+          return item.flex_columns[index].title?.text || '';
+        }
+        return '';
+      };
+
+      const title = item.title?.text || item.title || getFlexText(0);
+      const subtitle = item.subtitle?.text || item.subtitle || getFlexText(1);
+      const id = item.id;
+
+      // Determine type based on ID structure and text strings
+      let type = 'unknown';
+
+      const isArtist = (id && id.startsWith('UC')) || (subtitle && (subtitle.includes('Artist') || subtitle.includes('Profile')));
+      const isAlbum = (id && id.startsWith('MPREb')) || (subtitle && subtitle.includes('Album')) || (getFlexText(1).includes('Album'));
+      const isTrack = (item.video_id) || (subtitle && (subtitle.includes('Song') || subtitle.includes('Video'))) || (getFlexText(1).includes('Song'));
+
+      if (isArtist) type = 'artist';
+      else if (isAlbum) type = 'album';
+      else if (isTrack) type = 'track';
+      // Shelves Fallback
+      else if (shelfType === 'Albums') type = 'album';
+      else if (shelfType === 'Songs') type = 'track';
+      else if (shelfType === 'Artists') type = 'artist';
+
+      // Add to arrays
+      if (type === 'artist') {
+        artists.push({
+          id: id,
+          name: title,
+          image: item.thumbnail?.contents?.[0]?.url,
+          subscribers: subtitle
+        });
+      } else if (type === 'album') {
+        albums.push({
+          id: id,
+          idStr: id,
+          title: title,
+          artist: subtitle.replace('Album • ', '').split(' • ')[0],
+          cover: item.thumbnail?.contents?.[0]?.url
+        });
+      } else if (type === 'track') {
+        tracks.push({
+          id: id,
+          videoId: item.video_id || id,
+          title: title,
+          artists: parseArtists(item),
+          duration: item.duration?.text || '', // Duration sometimes in flex cols too?
+          thumbnail: item.thumbnail?.contents?.[0]?.url
+        });
+      }
+    };
+
+    if (search.contents && Array.isArray(search.contents)) {
+      search.contents.forEach(shelf => {
+        let shelfTitle = shelf.title?.text || '';
+
+        // Handle MusicCardShelf (Top Result)
+        if (shelf.type === 'MusicCardShelf') {
+          // The shelf *itself* is often the "Top Result" artist/album/song
+          // Try to extract metadata from the shelf properties
+          const isArtist = shelf.subtitle?.text?.includes('Artist') || shelf.title?.text === 'Ado'; // Heuristic
+          // Note: youtubei.js structure for shelf properties might vary.
+          // Depending on the version, title might be text, properties might be directly on shelf.
+
+          // Let's create a synthetic item from the shelf metadata to pass to processItem
+          // Or handle it directly.
+
+          // Attempt to grab header data if available
+          const header = shelf.header;
+          if (header) {
+            processItem(header, 'Top Result');
+          }
+
+          // ALSO process contents (usually songs/albums under the card)
+          if (shelf.contents && Array.isArray(shelf.contents)) {
+            shelf.contents.forEach(item => processItem(item, 'Top Result'));
+          }
+
+          // If header didn't exist or work, try shelf properties directly
+          // Sometimes the shelf has title, thumbnail, navigation_endpoint
+          if (!header && shelf.title) {
+            const syntheticItem = {
+              id: shelf.on_tap?.payload?.browseId || '', // browseId often in on_tap or main navigation
+              title: shelf.title,
+              subtitle: shelf.subtitle,
+              thumbnail: shelf.thumbnail,
+              navigation_endpoint: shelf.header?.navigation_endpoint || shelf.on_tap
+            };
+            // Only push if it looks like an artist/album
+            processItem(syntheticItem, 'Top Result');
+          }
+
+        } else {
+          if (shelf.contents && Array.isArray(shelf.contents)) {
+            shelf.contents.forEach(item => processItem(item, shelfTitle));
+          }
+        }
+      });
+    }
+
+    // Safety fallback for API libraries that pre-parse
+    if (artists.length === 0 && search.artists?.length) artists = search.artists.map(a => ({ id: a.id, name: a.name, image: a.thumbnail?.contents?.[0]?.url }));
+    if (albums.length === 0 && search.albums?.length) albums = search.albums.map(a => ({ id: a.id, idStr: a.id, title: a.title, artist: a.artist?.name, cover: a.thumbnail?.contents?.[0]?.url }));
+
+    // Sort & Limit
+    res.json({
+      artists: artists.slice(0, 5),
+      albums: albums.slice(0, 10),
+      tracks: tracks.slice(0, 20)
+    });
+
+  } catch (e) {
+    console.error('[Smart Search] Error:', e);
+    res.status(500).json({ artists: [], albums: [], tracks: [] });
   }
 });
 

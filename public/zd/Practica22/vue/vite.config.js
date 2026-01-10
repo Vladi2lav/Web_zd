@@ -11,6 +11,10 @@ export default defineConfig({
     outDir: '../',
     emptyOutDir: false,
   },
+  server: {
+    host: '0.0.0.0', // позволяет подключаться по IP
+    port: 5173      // твой порт
+  },
 
   plugins: [
     vue({

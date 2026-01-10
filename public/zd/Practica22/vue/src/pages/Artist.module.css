@@ -1,0 +1,86 @@
+.artistPage {
+    padding: 24px;
+    padding-bottom: 200px;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.artistImage {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.headerInfo {
+    flex: 1;
+}
+
+.artistName {
+    font-size: 4rem;
+    font-weight: 800;
+    margin: 0;
+    margin-bottom: 16px;
+}
+
+.artistDesc {
+    font-size: 1rem;
+    color: #ccc;
+    max-width: 600px;
+}
+
+.likeButton {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    margin-top: 16px;
+    padding: 0;
+    transition: transform 0.2s;
+}
+
+.likeButton:hover {
+    transform: scale(1.1);
+}
+
+.section {
+    margin-bottom: 40px;
+}
+
+.sectionTitle {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.trackTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.trackRow {
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.trackRow:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.albumGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 24px;
+}
+
+.linkWrapper {
+    text-decoration: none;
+    color: inherit;
+}

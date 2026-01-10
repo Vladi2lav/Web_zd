@@ -7,6 +7,7 @@ import Home from './pages/Home.vue'
 import Search from './pages/Search.vue'
 import LikedSongs from './pages/LikedSongs.vue'
 import Album from './pages/Album.vue'
+import Artist from './pages/Artist.vue'
 
 const pinia = createPinia()
 const router = createRouter({
@@ -23,7 +24,7 @@ const router = createRouter({
       component: Search
     },
     {
-      path: '/liked-songs',
+      path: '/liked',
       name: 'liked-songs',
       component: LikedSongs
     },
@@ -31,6 +32,11 @@ const router = createRouter({
       path: '/album/:id',
       name: 'album',
       component: Album
+    },
+    {
+      path: '/artist/:id',
+      name: 'artist',
+      component: Artist
     }
   ]
 })

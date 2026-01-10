@@ -35,13 +35,25 @@
       </div>
     </section>
 
-    <SongList 
-      v-if="displayedTracks.length > 0"
-      :tracks="displayedTracks"
-      :likedIds="likesStore.likedIds"
-      @track-selected="playTrack"
-      @toggle-like="toggleLike"
-    />
+    <div v-if="displayedTracks.length > 0" :class="styles.trackListContainer">
+       <table :class="styles.trackTable">
+         <tbody>
+           <tr 
+             v-for="(track, index) in displayedTracks" 
+             :key="track.id" 
+             :class="styles.trackRow"
+             @click="playTrack(index)"
+           >
+             <Audio_Track 
+               :track="track"
+               :index="index"
+               :likedIds="likesStore.likedIds"
+               @toggleLike="toggleLike"
+             />
+           </tr>
+         </tbody>
+       </table>
+    </div>
 
     <div v-else :class="styles.emptyState">
       <h2>Нет избранных треков</h2>
@@ -55,13 +67,13 @@
 import { mapStores } from 'pinia';
 import { usePlayerStore } from '../stores/player';
 import { useLikesStore } from '../stores/likes';
-import SongList from '../components/SongList.vue';
+import Audio_Track from '../components/Audio_Track.vue';
 import styles from './LikedSongs.module.css';
 
 export default {
   name: 'LikedSongsPage',
   components: {
-    SongList,
+    Audio_Track
   },
   data() {
     return {
