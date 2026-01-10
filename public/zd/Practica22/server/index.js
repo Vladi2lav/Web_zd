@@ -244,6 +244,32 @@ app.get('/api/search/smart', async (req, res) => {
 });
 
 
+app.get('/api/album/:id', async (req, res) => {
+  try {
+    const album = await youtube.music.getAlbum(req.params.id);
+
+    const simpleAlbum = {
+      title: album.header.title.text,
+      artist: album.header.author?.name || 'Unknown Artist',
+      cover: album.header.thumbnails?.[0]?.url,
+      tracks: album.contents.map(item => ({
+        id: item.id,
+        videoId: item.id,
+        title: item.title,
+        artists: item.artists?.map(a => a.name) || [],
+        duration: item.duration?.text,
+        thumbnail: item.thumbnail?.contents?.[0]?.url
+      }))
+    };
+
+    res.json(simpleAlbum);
+  } catch (e) {
+    console.error("Error fetching album:", e);
+    res.status(500).json({ error: "Failed to fetch album" });
+  }
+});
+
+
 app.get('/api/stream/:videoId', async (req, res) => {
   try {
     const { videoId } = req.params;

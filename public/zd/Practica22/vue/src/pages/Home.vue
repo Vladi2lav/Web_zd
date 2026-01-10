@@ -1,9 +1,11 @@
+
+
+
+
+
 <template>
   <div class="home-page">
-    <h1>Home</h1>
-    <p>Welcome to your music app. Here you can find new releases and featured albums.</p>
     
-    <h2>Albums</h2>
     <div class="album-grid">
       <AlbumCard v-for="album in albums" :key="album.id" :album="album" />
     </div>
@@ -17,6 +19,14 @@
     />
   </div>
 </template>
+
+
+
+
+
+
+
+
 
 <script>
 import { mapStores } from 'pinia';

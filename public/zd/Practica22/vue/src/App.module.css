@@ -1,36 +1,86 @@
-.albumPage {
-  background-color: #0a0e16;
-  color: #e0e0e0;
-  min-height: 100vh;
-  font-family: 'Montserrat', sans-serif;
+/* Main App Layout */
+.appContainer {
+    display: grid;
+    /* Use CSS variable for width, default fallback 250px */
+    grid-template-columns: var(--sidebar-width, 250px) 1fr;
+    grid-template-rows: 1fr auto;
+    height: 100vh;
+    width: 100vw;
+    background-color: #000000;
+    color: #ffffff;
+    overflow: hidden;
+    font-family: 'Montserrat', sans-serif;
 }
 
-.siteHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 8%;
-  background: rgba(10, 14, 22, 0.8);
-  backdrop-filter: blur(10px);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+.sidebarArea {
+    grid-row: 1 / 2;
+    grid-column: 1 / 2;
+    overflow: hidden;
+    border-right: 1px solid #282828;
+    background-color: #121212;
+    position: relative;
+    /* For resizer positioning */
 }
 
-.logo {
-  font-weight: 700;
-  font-size: 20px;
-  letter-spacing: 1px;
+.mainContent {
+    grid-row: 1 / 2;
+    grid-column: 2 / 3;
+    overflow-y: auto;
+    position: relative;
+    background: linear-gradient(180deg, #222 0%, #121212 20%);
 }
 
-.navigation a {
-  color: #b3b3b3;
-  text-decoration: none;
-  margin-left: 30px;
-  font-size: 14px;
-  font-weight: 600;
-  transition: color 0.2s;
+.playerArea {
+    grid-row: 2 / 3;
+    grid-column: 1 / 3;
+    z-index: 100;
+    border-top: 1px solid #282828;
+    background-color: #181818;
 }
 
-.navigation a:hover { color: #fff; }
+/* Scrollbar styling for main content */
+.mainContent::-webkit-scrollbar {
+    width: 12px;
+}
+
+.mainContent::-webkit-scrollbar-track {
+    background: #121212;
+}
+
+.mainContent::-webkit-scrollbar-thumb {
+    background-color: #555;
+    border-radius: 6px;
+    border: 3px solid #121212;
+}
+
+/* Mobile Layout */
+@media (max-width: 768px) {
+    .appContainer {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+    }
+
+    .mainContent {
+        flex: 1;
+        overflow-y: auto;
+        width: 100%;
+        order: 1;
+    }
+
+    .playerArea {
+        flex-shrink: 0;
+        width: 100%;
+        order: 2;
+    }
+
+    .sidebarArea {
+        flex-shrink: 0;
+        width: 100%;
+        height: auto;
+        order: 3;
+        border-right: none;
+        border-top: 1px solid #282828;
+        background-color: #121212;
+    }
+}

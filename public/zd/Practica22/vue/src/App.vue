@@ -1,40 +1,73 @@
 <template>
-  <div :class="styles.albumPage">
-    <header :class="styles.siteHeader">
-      <div :class="styles.logo">MGE</div>
-      <nav :class="styles.navigation">
-        <RouterLink to="/" :class="styles.navLink">Home</RouterLink>
-        <RouterLink to="/search" :class="styles.navLink">Search</RouterLink>
-        <RouterLink to="/liked-songs" :class="styles.navLink">Liked Songs</RouterLink>
-      </nav>
-    </header>
-    <RouterView />
-    <FunctionalPlayer />
+  <div :class="styles.appContainer" :style="{ '--sidebar-width': sidebarWidth + 'px' }">
+    <div :class="styles.sidebarArea">
+      <Sidebar 
+        :width="sidebarWidth"
+        @resize-start="startResize"
+      />
+    </div>
+
+    <main :class="styles.mainContent">
+      <RouterView />
+    </main>
+
+    <div :class="styles.playerArea">
+      <FunctionalPlayer />
+    </div>
   </div>
 </template>
 
 <script>
 import { mapStores } from 'pinia';
 import { useLikesStore } from './stores/likes';
-import { usePlayerStore } from './stores/player'; // Kept for consistency if needed later
+import { usePlayerStore } from './stores/player'; 
 import FunctionalPlayer from './components/Functional_player.vue';
+import Sidebar from './components/Sidebar.vue';
 import styles from './App.module.css';
 
 export default {
   components: {
-    FunctionalPlayer
+    FunctionalPlayer,
+    Sidebar
   },
   data() {
     return {
-      styles: styles
+      styles: styles,
+      sidebarWidth: 250, // Default width
+      minSidebarWidth: 100,
+      isResizing: false
     };
   },
   computed: {
     ...mapStores(useLikesStore, usePlayerStore)
   },
   created() {
-    // Load likes globally on app start
     this.likesStore.loadLikes();
+    // Add global event listeners for drag
+    window.addEventListener('mousemove', this.handleResize);
+    window.addEventListener('mouseup', this.stopResize);
+  },
+  beforeUnmount() {
+    window.removeEventListener('mousemove', this.handleResize);
+    window.removeEventListener('mouseup', this.stopResize);
+  },
+  methods: {
+    startResize(event) {
+      this.isResizing = true;
+    },
+    handleResize(event) {
+      if (!this.isResizing) return;
+      
+      const newWidth = event.clientX;
+      const maxSidebarWidth = window.innerWidth / 2; // Max 50% screen
+
+      if (newWidth >= this.minSidebarWidth && newWidth <= maxSidebarWidth) {
+        this.sidebarWidth = newWidth;
+      }
+    },
+    stopResize() {
+      this.isResizing = false;
+    }
   }
 };
 </script>
